@@ -189,7 +189,7 @@ Enable:
 
 - 2FA on Tailscale  
 - Device approval  
-- Key expiry (already visible in your status output)
+- Key expiry
 
 ---
 
