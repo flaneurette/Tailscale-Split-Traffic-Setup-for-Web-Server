@@ -10,7 +10,7 @@ One neat way of using Tailscale is the exit node function. If we have a public w
 
 - Public IP protection: Our public server's IP is never exposed when downloading or updating things. This reduces attack surfaces and the ability for malicious actors to profile the server. i.e. your server becomes invisible.
 
-- Custom DNS filtering: We could use advanced DNS blocklists from home (e.g., routed through NextDNS), preventing our server from connecting to maliciously labeled IP addresses. This reduces "phone-home" calls if the server were compromised.
+- Custom DNS filtering: We could use advanced DNS blocklists from home (e.g., routed through NextDNS at the router level), preventing our server from connecting to maliciously labeled IP addresses. This reduces "phone-home" calls if the server were compromised.
 
 - Real-time monitoring: Routing through home gives more control over the server's traffic in real time, allowing for quick blocking if needed (e.g., in case of server compromise, botnet assignment, or takeover).
 
