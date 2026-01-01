@@ -114,7 +114,7 @@ Tailscale enforces three layers of protection:
 
 ### Restrict exit node usage via ACLs
 
-In the Tailscale Admin Console → Access Controls, and edit all configurations who can use it and connect to it.
+In the Tailscale Admin Console, Access Controls, and edit all configurations who can use it and connect to it.
 
 What this does:
 
