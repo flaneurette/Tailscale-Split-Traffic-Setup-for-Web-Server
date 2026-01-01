@@ -4,7 +4,7 @@ One neat way of using Tailscale is the exit node function. If we have a public w
 
 ## Benefits
 
-- On-site protection: No one in the vicinity of the server can tap or tamper with the wire or downstream connection. If they did, they would have to decrypt the Tailscale stream. This prevents tampering on-site, which can be a concern in specific data centers or targeted attacks.
+- On-site protection: No one in the vicinity of the server can tap or tamper with the wire or connection. If they did, they would have to decrypt the Tailscale stream. This prevents tampering on-site, which can be a concern in specific data centers or targeted attacks.
 
 - Home server routing: We could host a small server at home that runs 24/7 and routes that traffic for your public server. This ensures that the server's traffic is encrypted and anonymized.
 
