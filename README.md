@@ -12,7 +12,7 @@ One neat way of using Tailscale is the exit node function. If we have a public w
 
 4. Custom DNS filtering: We could use advanced DNS blocklists from home (e.g., routed through NextDNS), preventing our server from connecting to maliciously labeled IP addresses. This reduces "phone-home" calls if the server were compromised.
 
-5. Real-time monitoring: Routing through home gives more control over the server's outgoing traffic in real time, allowing for quick blocking if needed (e.g., in case of server compromise, botnet assignment, or takeover).
+5. Real-time monitoring: Routing through home gives more control over the server's traffic in real time, allowing for quick blocking if needed (e.g., in case of server compromise, botnet assignment, or takeover).
 
 ## Tailscale setup example
 
