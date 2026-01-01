@@ -4,15 +4,15 @@ One neat way of using Tailscale is the exit node function. If we have a public w
 
 ## Benefits
 
-1. On-site protection: No one in the vicinity of the server can tap or tamper with the wire or downstream connection. If they did, they would have to decrypt the Tailscale stream. This prevents tampering on-site, which can be a concern in specific data centers or targeted attacks.
+- On-site protection: No one in the vicinity of the server can tap or tamper with the wire or downstream connection. If they did, they would have to decrypt the Tailscale stream. This prevents tampering on-site, which can be a concern in specific data centers or targeted attacks.
 
-2. Home server routing: We could host a small server at home that runs 24/7 and routes that traffic for your public server. This ensures that the server's traffic is encrypted and anonymized.
+- Home server routing: We could host a small server at home that runs 24/7 and routes that traffic for your public server. This ensures that the server's traffic is encrypted and anonymized.
 
-3. Public IP protection: Our public server's IP is never exposed when downloading or updating things. This reduces attack surfaces and the ability for malicious actors to profile the server.
+- Public IP protection: Our public server's IP is never exposed when downloading or updating things. This reduces attack surfaces and the ability for malicious actors to profile the server.
 
-4. Custom DNS filtering: We could use advanced DNS blocklists from home (e.g., routed through NextDNS), preventing our server from connecting to maliciously labeled IP addresses. This reduces "phone-home" calls if the server were compromised.
+- Custom DNS filtering: We could use advanced DNS blocklists from home (e.g., routed through NextDNS), preventing our server from connecting to maliciously labeled IP addresses. This reduces "phone-home" calls if the server were compromised.
 
-5. Real-time monitoring: Routing through home gives more control over the server's traffic in real time, allowing for quick blocking if needed (e.g., in case of server compromise, botnet assignment, or takeover).
+- Real-time monitoring: Routing through home gives more control over the server's traffic in real time, allowing for quick blocking if needed (e.g., in case of server compromise, botnet assignment, or takeover).
 
 ## Tailscale setup example
 
