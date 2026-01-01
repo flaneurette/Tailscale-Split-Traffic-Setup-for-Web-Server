@@ -1,6 +1,6 @@
 # Using Tailscale exit nodes for secure server traffic
 
-One neat way of using Tailscale is the exit node function. If we have a public webserver, we can make sure that any traffic the server requests, such as updates, `curl`, or `wget` requests, are routed through another IP, such as your home IP. 
+One neat way of using Tailscale is the exit node function. If we have a public webserver, we can make sure that any traffic the server requests, such as `apt updates`, `curl`, or `wget` requests, are routed through another IP, such as your home IP. 
 
 ## Benefits
 
@@ -8,7 +8,7 @@ One neat way of using Tailscale is the exit node function. If we have a public w
 
 - Home server routing: We could host a small server at home that runs 24/7 and routes that traffic for your public server. This ensures that the server's traffic is encrypted and anonymized.
 
-- Public IP protection: Our public server's IP is never exposed when downloading or updating things. This reduces attack surfaces and the ability for malicious actors to profile the server.
+- Public IP protection: Our public server's IP is never exposed when downloading or updating things. This reduces attack surfaces and the ability for malicious actors to profile the server. i.e. your server becomes invisible.
 
 - Custom DNS filtering: We could use advanced DNS blocklists from home (e.g., routed through NextDNS), preventing our server from connecting to maliciously labeled IP addresses. This reduces "phone-home" calls if the server were compromised.
 
