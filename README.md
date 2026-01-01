@@ -60,9 +60,7 @@ sudo iptables -A INPUT -j DROP
 - Use ACLs: Tailscale ACLs can restrict which devices can use the exit node and what subnets or ports they can access, adding an extra layer of control.
 - Separate home network: Ideally, the exit-node home server runs on a network segment separate from your personal devices to reduce risk.
 
-# Tailscale Exit Node: Safety and Best Practices
-
-## 1. The most important point (reassurance first)
+## Tailscale exit node: safety and best practices
 
 Tailscale exit nodes are NOT public VPNs.
 
@@ -114,7 +112,7 @@ Tailscale enforces three layers of protection:
 
 ## 3. Locking down the exit node properly (recommended)
 
-### Step 1: Restrict exit node usage via ACLs
+### Restrict exit node usage via ACLs
 
 In the Tailscale Admin Console → Access Controls, and edit all configurations who can use it and connect to it.
 
@@ -127,7 +125,7 @@ What this does:
 
 ---
 
-## 4. Prevent lateral abuse even inside the tailnet
+## Prevent lateral abuse even inside the tailnet
 
 On the home server, add a firewall rule:
 
@@ -144,7 +142,7 @@ Now:
 
 ---
 
-## 5. Prevent your home server from becoming a relay
+## Prevent your home server from becoming a relay
 
 Make sure you do NOT enable subnet routing unless you need it:
 
@@ -161,7 +159,7 @@ This prevents:
 
 ---
 
-## 6. What attackers cannot do
+## What attackers cannot do
 
 Attackers cannot:
 
@@ -176,11 +174,11 @@ There is no listening service exposed.
 
 ---
 
-## 7. Realistic threat model (honest)
+## Realistic threat model
 
 The only ways your home exit node could be abused are:
 
-- Someone compromises your Tailscale account  
+- Someone compromises your Tailscale account, plus bypasses your home server  
 - Someone steals a trusted device  
 - You accidentally approve a new device  
 - You misconfigure ACLs  
