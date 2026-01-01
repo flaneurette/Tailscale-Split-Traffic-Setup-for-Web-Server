@@ -46,29 +46,20 @@ curl icanhazip.com
 tailscale status
 ```
 
-### Disabling exit node on webserver
-
-```bash
-# Reset to direct connection (no exit node)
-sudo tailscale up --reset
-```
-
 ## Security considerations
 
 - Preventing abuse of home server: Only authorized devices on your Tailscale network should use your home server as an exit node. Tailscale's authentication ensures that random outsiders cannot connect.
 - Restrict allowed routes and ports: Configure your home server to only allow the traffic you want to proxy. For example, allow only HTTP (80), HTTPS (443), and SSH (22) from your public server:
+
 ```bash
 sudo iptables -A INPUT -p tcp -m multiport --dports 22,80,443 -s <PublicServerIP> -j ACCEPT
 sudo iptables -A INPUT -j DROP
 ```
+
 - Monitor traffic: Keep an eye on unusual traffic patterns from your home server to detect misconfigurations or potential misuse.
 - Use ACLs: Tailscale ACLs can restrict which devices can use the exit node and what subnets or ports they can access, adding an extra layer of control.
 - Separate home network: Ideally, the exit-node home server runs on a network segment separate from your personal devices to reduce risk.
 
-```
-
-
-```markdown
 # Tailscale Exit Node: Safety and Best Practices
 
 ## 1. The most important point (reassurance first)
@@ -93,7 +84,7 @@ An attacker on the public internet cannot discover or use your exit node.
 
 ---
 
-## 2. Why nobody else can connect (under the hood)
+## 2. Why nobody else can connect
 
 Tailscale enforces three layers of protection:
 
@@ -125,8 +116,7 @@ Tailscale enforces three layers of protection:
 
 ### Step 1: Restrict exit node usage via ACLs
 
-In the Tailscale Admin Console → Access Controls
-
+In the Tailscale Admin Console → Access Controls, and edit all configurations who can use it and connect to it.
 
 What this does:
 
@@ -219,3 +209,8 @@ Because:
 
 You're not opening your home to the internet.  
 You're creating a private, authenticated tunnel.
+
+
+### Disabling exit node on webserver
+
+`sudo tailscale up --exit-node= --advertise-exit-node`
