@@ -5,7 +5,7 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 ## Requirements:
 
 - Your public webserver (Linux)
-- A cheap low key VPS with dedicated IP (few specs, use the cheapest you can get: 1 or 2 cores, 4-8GB RAM.)
+- A cheap low key VPS with dedicated IP (few specs, use the cheapest you can get: 1 or 2 cores, 4-8GB RAM.) i.e. https://lowendbox.com
 - OR: A small home server, instead of the cheap VPS.
   
 ## Benefits
