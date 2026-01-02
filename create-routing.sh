@@ -1,24 +1,29 @@
 #!/bin/bash
-set -e
-set -o pipefail
+set -euo pipefail
 
-# NOTE: RUN THIS ON THE PUBLIC WEBSERVER, NOT HOME/VPS EXIT NODE
-# Move the scrip to /root/ or /usr/local/bin/
-# Make it executable: chmod +x ./create-routing.sh
+# ===================================================================
+# Tailscale Selective Routing Setup
+# ===================================================================
+# NOTE: Run this on the PUBLIC server, NOT the exit node
+# Move to /root/ or /usr/local/bin/
+# Make executable: chmod +x create-routing.sh
 # Run: sudo ./create-routing.sh
-
-# Script assumes: tailscaled.service, but could be: tailscale.service in some cases (without the d). Manually edit this script to change!
+# ===================================================================
 
 echo "=== Tailscale Selective Routing Setup ==="
 echo "WARNING: This will replace UFW with iptables-persistent"
 read -p "Continue? (yes/no): " confirm
 [[ "$confirm" != "yes" ]] && { echo "Aborted."; exit 1; }
 
-# Update first
+# -----------------------------
+# 1. Update & install curl
+# -----------------------------
 apt-get update
-apt-get install curl
+apt-get install -y curl
 
-### 1. Snapshot existing firewall (UFW still active)
+# -----------------------------
+# 2. Snapshot existing firewall
+# -----------------------------
 echo "[1/10] Creating firewall snapshots..."
 mkdir -p /root/firewall-backup
 iptables-save > /root/firewall-backup/iptables.ufw.snapshot
@@ -28,7 +33,9 @@ ip6tables-save -t mangle > /root/firewall-backup/ip6tables.mangle.snapshot
 ufw status verbose > /root/firewall-backup/ufw.rules.snapshot 2>/dev/null || true
 echo "Snapshots saved in /root/firewall-backup/"
 
-### 2. Install Tailscale
+# -----------------------------
+# 3. Install Tailscale if missing
+# -----------------------------
 echo "[2/10] Installing Tailscale..."
 if ! command -v tailscale >/dev/null; then
   curl -fsSL https://tailscale.com/install.sh | sh
@@ -36,36 +43,41 @@ else
   echo "Tailscale already installed"
 fi
 
-echo "[3/10] Bringing Tailscale up (no exit node)..."
-if ! tailscale status >/dev/null 2>&1; then
-  tailscale up --accept-routes=false --advertise-exit-node=false
-fi
+# -----------------------------
+# 4. Start Tailscale
+# -----------------------------
+echo "[3/10] Bringing Tailscale up..."
+tailscale up --accept-routes=false --advertise-exit-node=false || true
 
-# Wait for Tailscale interface
-echo "Waiting for tailscale0 interface..."
-for i in {1..30}; do
-  if ip link show tailscale0 >/dev/null 2>&1; then
-    echo "tailscale0 is ready"
-    break
-  fi
-  sleep 1
-  [[ $i -eq 30 ]] && { echo "ERROR: tailscale0 not found"; exit 1; }
+# Wait for interface AND DERP connectivity
+echo "Waiting for tailscale0 and DERP connectivity..."
+for i in $(seq 1 30); do
+    if ip link show tailscale0 >/dev/null 2>&1; then
+        STATUS=$(tailscale status --json 2>/dev/null || echo "")
+        if [[ $STATUS == *"100."* ]]; then
+            echo "Tailscale online"
+            break
+        fi
+    fi
+    sleep 1
+    [[ $i -eq 30 ]] && { echo "ERROR: Tailscale not online"; exit 1; }
 done
 
-### 4. Install iptables persistence (removes UFW)
-echo "[4/10] Installing iptables-persistent (UFW will be removed)..."
+# -----------------------------
+# 5. Install iptables persistence (removes UFW)
+# -----------------------------
+echo "[4/10] Installing iptables-persistent..."
 export DEBIAN_FRONTEND=noninteractive
-apt-get update
 apt-get install -y netfilter-persistent iptables-persistent
 
-### 5. Restore firewall exactly as it was
-
+# -----------------------------
+# 6. Restore previous firewall
+# -----------------------------
 restore_if_exists() {
     local file="$1"
     local cmd="$2"
     if [[ -s "$file" ]]; then
         if [[ "$cmd" == "ip6tables-restore" ]]; then
-            # Skip IPv6 restore if IPv6 is disabled
             if sysctl -n net.ipv6.conf.all.disable_ipv6 | grep -q 1; then
                 echo "IPv6 disabled, skipping $file"
                 return
@@ -78,18 +90,16 @@ restore_if_exists() {
     fi
 }
 
+echo "[5/10] Restoring firewall..."
 restore_if_exists /root/firewall-backup/iptables.ufw.snapshot iptables-restore
 restore_if_exists /root/firewall-backup/ip6tables.ufw.snapshot ip6tables-restore
 restore_if_exists /root/firewall-backup/iptables.mangle.snapshot iptables-restore
 restore_if_exists /root/firewall-backup/ip6tables.mangle.snapshot ip6tables-restore
 
-
-# Verify restoration
-echo "Verifying restored rules..."
-{ iptables -L -n | head -20; } || true
-
-### 6. Create routing table safely
-echo "[6/10] Ensuring Tailscale routing table exists..."
+# -----------------------------
+# 7. Ensure Tailscale routing table
+# -----------------------------
+echo "[6/10] Ensuring routing table..."
 if ! grep -q '^200 tailscale$' /etc/iproute2/rt_tables; then
   echo '200 tailscale' >> /etc/iproute2/rt_tables
   echo "Added tailscale routing table"
@@ -97,52 +107,51 @@ else
   echo "Routing table already exists"
 fi
 
-### 7. Add selective packet marking (idempotent)
+# -----------------------------
+# 8. Add mangle rules (idempotent)
+# -----------------------------
 echo "[7/10] Adding packet marking rules..."
+# Exclude Tailscale traffic first
+if ! iptables -t mangle -C OUTPUT -o tailscale0 -j RETURN 2>/dev/null; then
+    iptables -t mangle -I OUTPUT 1 -o tailscale0 -j RETURN
+    echo "Added exclusion for tailscale0"
+fi
 
-# Function to add marking rules safely
+# Function to mark ports
 add_mark() {
   if ! iptables -t mangle -C OUTPUT "$@" -j MARK --set-mark 200 2>/dev/null; then
-    iptables -t mangle -A OUTPUT "$@" -j MARK --set-mark 200
-    echo "Added rule: $*"
+      iptables -t mangle -A OUTPUT "$@" -j MARK --set-mark 200
+      echo "Added rule: $*"
   else
-    echo "Rule exists: $*"
+      echo "Rule exists: $*"
   fi
 }
 
-# Mark packets for routing through Tailscale
+# Mark selective traffic
 add_mark -p tcp --dport 80
 add_mark -p tcp --dport 443
 add_mark -p tcp --dport 22
 add_mark -p tcp --dport 53
 add_mark -p udp --dport 53
 
-# Important: Don't route Tailscale's own traffic through itself
-echo "Adding Tailscale exclusion rule..."
-if ! iptables -t mangle -C OUTPUT -o tailscale0 -j RETURN 2>/dev/null; then
-  iptables -t mangle -I OUTPUT 1 -o tailscale0 -j RETURN
-fi
-
-### 8. Policy routing
+# -----------------------------
+# 9. Policy routing
+# -----------------------------
 echo "[8/10] Configuring policy routing..."
-
-# Delete existing rules/routes to avoid duplicates
 ip rule del fwmark 200 table tailscale 2>/dev/null || true
 ip route flush table tailscale 2>/dev/null || true
-
-# Add new routes
 ip route add default dev tailscale0 table tailscale
 ip rule add fwmark 200 table tailscale priority 100
 
-# Verify routing
-echo "Current routing rules:"
-ip rule show | grep -E "(tailscale|200)"
-
-### 9. Persist iptables rules
-echo "[9/10] Saving firewall rules..."
+# -----------------------------
+# 10. Persist firewall
+# -----------------------------
+echo "[9/10] Saving iptables..."
 netfilter-persistent save
 
-### 10. Install systemd service
+# -----------------------------
+# 11. Systemd service
+# -----------------------------
 echo "[10/10] Installing systemd service..."
 cat >/etc/systemd/system/tailscale-routing.service <<'EOF'
 [Unit]
@@ -158,7 +167,7 @@ RemainAfterExit=yes
 # Wait for interface
 ExecStartPre=/bin/sh -c 'for i in $(seq 1 30); do ip link show tailscale0 >/dev/null 2>&1 && break || sleep 1; done'
 
-# Clean existing rules
+# Cleanup existing rules
 ExecStartPre=-/usr/sbin/ip rule del fwmark 200 table tailscale
 ExecStartPre=-/usr/sbin/ip route flush table tailscale
 
@@ -178,10 +187,16 @@ systemctl daemon-reload
 systemctl enable tailscale-routing.service
 systemctl start tailscale-routing.service
 
+systemctl restart tailscaled
+tailscale up --accept-routes=false --advertise-exit-node=false
+
+# -----------------------------
+# Done
+# -----------------------------
 echo
 echo "=== SETUP COMPLETE ==="
 echo
-echo "Exit node IP (check if it uses your other server IP):"
+echo "Exit node IP:"
 echo "----------------------"
 IP=$(curl -s icanhazip.com || echo "ERROR")
 echo "Exit node IP: $IP"
@@ -190,22 +205,22 @@ echo "Tailscale status:"
 echo "----------------------"
 tailscale status
 echo
-echo "Current configuration:"
+echo "Routing rules:"
 echo "----------------------"
-ip rule show
+ip rule show | grep -E "(tailscale|200)"
 echo
-echo "Tailscale routing table:"
+echo "Routing table:"
 echo "----------------------"
 ip route show table tailscale
 echo
 echo "Packet marking rules:"
 echo "----------------------"
-iptables -t mangle -L OUTPUT -n -v --line-numbers | grep "MARK"
+iptables -t mangle -L OUTPUT -n -v --line-numbers | grep "MARK" || true
 echo
-echo "Verify with:"
+echo "Verify:"
 echo "----------------------"
-echo "  curl -4 ifconfig.me  # Should show Tailscale exit IP"
-echo "  traceroute -n 8.8.8.8  # Should go through Tailscale"
+echo "  curl -4 ifconfig.me"
+echo "  traceroute -n 8.8.8.8"
 echo
 echo "Emergency rollback:"
 echo "----------------------"
