@@ -101,7 +101,7 @@ If it fails, run the script for a second time. It will usually run and fix thing
 
 Then do this:
 
-`sudo tailscale up --exit-node=<IP.EXIT.NODE> -accept-routes=false --advertise-exit-node=false`
+`sudo tailscale up --exit-node=<IP.EXIT.NODE> --accept-routes`
 
 `sudo systemctl enable tailscale-routing.service`
 
