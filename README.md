@@ -50,31 +50,104 @@ Important: After running `--advertise-exit-node`, you must approve this in the T
 
 ### 2. Configure the public webserver
 
-```bash
+Configure the public webserver (with split tunneling)
+
+This is where we configure selective routing. We'll route ports 80, 443, 22, and 53 through Tailscale, but keep email ports (25, 465, 587, 993, 995) direct.
+
+```
 # Install Tailscale
 curl -fsSL https://tailscale.com/install.sh | sh
 
-# Connect to Tailscale and use the home server as exit node
-sudo tailscale up --exit-node=<HomeServerName> --accept-dns
+# Connect to Tailscale but DON'T use exit node globally
+sudo tailscale up
 
-# Replace <HomeServerName> with either:
-# - The machine name (e.g., home-server)
-# - The Tailscale IP (e.g., 100.x.x.x)
+# Create a separate routing table for Tailscale
+echo "200 tailscale" | sudo tee -a /etc/iproute2/rt_tables
+
+# Add default route via Tailscale interface in the custom table
+
+sudo ip route add default dev tailscale0 table tailscale
+
+# Mark outbound traffic on specific ports to use Tailscale
+
+# Port 80 (HTTP)
+sudo iptables -t mangle -A OUTPUT -p tcp --dport 80 -j MARK --set-mark 200
+# Port 443 (HTTPS)
+sudo iptables -t mangle -A OUTPUT -p tcp --dport 443 -j MARK --set-mark 200
+# Port 22 (SSH outbound)
+sudo iptables -t mangle -A OUTPUT -p tcp --dport 22 -j MARK --set-mark 200
+# Port 53 (DNS)
+sudo iptables -t mangle -A OUTPUT -p tcp --dport 53 -j MARK --set-mark 200
+sudo iptables -t mangle -A OUTPUT -p udp --dport 53 -j MARK --set-mark 200
+
+# Route marked packets through Tailscale table
+sudo ip rule add fwmark 200 table tailscale
+
+# Explicitly exclude email ports (they'll use the default route)
+# This is implicit - by not marking these ports, they use the main routing table
+# Port 25 (SMTP) - not marked, uses default route
+# Port 465 (SMTPS) - not marked, uses default route
+# Port 587 (SMTP submission) - not marked, uses default route
+# Port 993 (IMAPS) - not marked, uses default route
+# Port 995 (POP3S) - not marked, uses default route
+
+# Install iptables-persistent
+sudo apt update
+sudo apt install iptables-persistent
+
+# Save current rules
+sudo netfilter-persistent save
+
+# Create a systemd service to restore ip rules
+sudo tee /etc/systemd/system/tailscale-routing.service > /dev/null <<EOF
+[Unit]
+Description=Tailscale selective routing
+After=network.target tailscale.service
+Requires=tailscale.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ip route add default dev tailscale0 table tailscale
+ExecStart=/usr/sbin/ip rule add fwmark 200 table tailscale
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Enable and start the service
+sudo systemctl daemon-reload
+sudo systemctl enable tailscale-routing.service
+sudo systemctl start tailscale-routing.service
 ```
 
 ### 3. Verify it's working
 
 ```bash
-# Check your public IP (should show your home IP)
+# Check your public IP for HTTP traffic (should show home IP)
 curl ifconfig.me
-# or
 curl icanhazip.com
 
-# Verify Tailscale status and exit node
+# Verify Tailscale status
 tailscale status
 
 # Should show something like:
 # 100.x.x.x   home-server   user@      linux   active; exit node; ...
+
+# Check the routing tables
+ip route show table tailscale
+ip rule show
+
+# Check iptables marks
+sudo iptables -t mangle -L OUTPUT -n -v
+
+# Test email still uses server IP (should show server IP, not home IP)
+# Connect to an SMTP server and check the connection IP in logs
+telnet smtp.gmail.com 587
+# (Exit with Ctrl+], then type quit)
+
+# Or check with a more direct test
+curl --interface eth0 ifconfig.me  # Force through main interface (server IP)
 
 # Test DNS resolution (should use home DNS if configured)
 nslookup google.com
@@ -82,6 +155,29 @@ nslookup google.com
 # Check routing
 ip route show table all | grep tailscale
 ```
+
+## How the split tunneling works
+
+Here's what happens with the configuration:
+
+    Traffic to ports 80, 443, 22, 53:
+        Marked with fwmark 200 by iptables
+        Routed through the tailscale routing table
+        Goes through the Tailscale exit node
+        Appears to come from your home IP
+
+    Traffic to ports 25, 465, 587, 993, 995 (email):
+        Not marked by iptables
+        Uses the default main routing table
+        Goes directly through your server's public IP
+        Maintains proper email reputation and SPF/DKIM
+
+    All other traffic:
+        Not marked by iptables
+        Uses the default main routing table
+        Goes directly through your server's public IP
+
+
 
 ## Security best practices
 
