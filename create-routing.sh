@@ -15,7 +15,8 @@ LOG_FILE="/var/log/tailscale-routing-setup.log"
 BACKUP_DIR="/root/firewall-backup"
 ROUTING_TABLE_ID=200
 ROUTING_TABLE_NAME="tailscale"
-SAFE_SSH_IP="your.backup.ssh.ip" # Not your private IP, that is already automatically added. Just a 2nd or 3rd IP, REQUIRED! Hint: Could also be the IP of your public server!)
+SAFE_SSH_IP="your.backup.ssh.ip" # Not your private IP, that is already automatically added. Just a 2nd or 3rd IP, REQUIRED! 
+# Hint: The above could also be the IP of your public server, so you have remote emergency SSH access, if tailscale goes down or otherwise.
 BYPASS_MARK=100  # Mark for traffic that should NOT use Tailscale
 
 # -----------------------------
