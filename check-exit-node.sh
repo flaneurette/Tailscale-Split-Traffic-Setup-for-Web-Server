@@ -348,8 +348,11 @@ REQUIRED ACTIONS:
 3. Check exit node system resources and network
 4. Review exit node logs: journalctl -u tailscaled -n 50
 5. Re-enable Tailscale on this machine after resolving:
-
+----------------------------------------------------------
+sudo systemctl restart tailscaled
 sudo tailscale up --accept-routes=false --advertise-exit-node=false --exit-node-allow-lan-access --exit-node=$EXIT_NODE_IP
+tailscale status
+----------------------------------------------------------
 
 Timeline:
 This machine has been checking every ~2 hours.
