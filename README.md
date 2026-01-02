@@ -36,7 +36,7 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up --exit-node=<HomeServerIPorNodeName>
 ```
 
-### Verifying traffic
+### Verifying traffic on public server
 
 ```bash
 # Check public IP to ensure traffic is going through home server
