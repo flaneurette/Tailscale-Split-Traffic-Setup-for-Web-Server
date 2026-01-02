@@ -163,6 +163,10 @@ sudo watch -n 2 'ss -tunap | grep tailscale'
 # Monitor bandwidth usage
 sudo iftop -i tailscale0
 
+# Or
+sudo apt install vnstat -y
+sudo vnstat
+
 # Check Tailscale logs
 sudo journalctl -u tailscale -f
 ```
