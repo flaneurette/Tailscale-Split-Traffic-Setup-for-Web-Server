@@ -95,7 +95,7 @@ Configure the public webserver (with split tunneling)
 
 > Move `undo-routing.sh` to the server. This is used to undo all routing tables for tailscale, in case of emergency or error.
 
-Edit `create-routing.sh`, or leave as is. This is where we configure selective routing. We'll route ports 80, 443, 22, and 53 through Tailscale, but keep email ports (25, 465, 587, 993, 995) direct.
+Edit `create-routing.sh`, or leave as is. This is where we configure selective routing. We'll route ports 80, 443, and 53 through Tailscale, but keep other ports (22, 25, 465, 587, 993, 995) direct.
 
 > Be sure to set a backup IP address for SSH access: `SAFE_SSH_IP="your.backup.ssh.ip"` REQUIRED!
 > This could also be the public server IP address.
