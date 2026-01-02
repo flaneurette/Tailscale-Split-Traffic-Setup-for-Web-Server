@@ -1,4 +1,4 @@
-# Using Tailscale exit nodes for secure server traffic
+# Using Tailscale split traffic tunnels.
 
 One powerful feature of Tailscale is the exit node function. If you have a public webserver, you can route all outbound traffic (like `apt updates`, `curl`, or `wget` requests) through another machine on your Tailscale network, such as a home server. This means your server's requests appear to come from your home IP instead of the VPS IP.
 
