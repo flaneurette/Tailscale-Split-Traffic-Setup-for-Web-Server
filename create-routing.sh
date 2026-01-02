@@ -59,8 +59,8 @@ apt-get install -y netfilter-persistent iptables-persistent
 
 ### 5. Restore firewall exactly as it was
 echo "[5/10] Restoring firewall snapshot..."
-iptables-restore < /root/firewall-backup/iptables.ufw.snapshot
-ip6tables-restore < /root/firewall-backup/ip6tables.ufw.snapshot
+iptables-restore < /root/firewall-backup/iptables.ufw.snapshot || true
+ip6tables-restore < /root/firewall-backup/ip6tables.ufw.snapshot || true
 
 # Verify restoration
 echo "Verifying restored rules..."
