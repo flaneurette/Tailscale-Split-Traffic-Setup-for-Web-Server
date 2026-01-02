@@ -277,14 +277,28 @@ add_mark iptables -p udp --dport 53
 # Only enable if you have console access or another connection method
 # add_mark iptables -p tcp --dport 22
 
+echo "Excluding SSH"
+echo "-------------------"
+
 # Get your IP
 MY_IP=$(echo $SSH_CLIENT | awk '{print $1}')
 
-# Protect SSH return path
-sudo iptables -t mangle -I OUTPUT 1 -p tcp --sport 22 -d "$MY_IP" -j MARK --set-mark 100
-sudo iptables -t mangle -I OUTPUT 1 -p tcp --sport 22 -d "$SAFE_SSH_IP" -j MARK --set-mark 100
+# Protect SSH return path (only if rules don't exist)
+if ! iptables -t mangle -C OUTPUT -p tcp --sport 22 -d "$MY_IP" -j MARK --set-mark 100 2>/dev/null; then
+    iptables -t mangle -I OUTPUT 1 -p tcp --sport 22 -d "$MY_IP" -j MARK --set-mark 100
+fi
 
-sudo ip rule add fwmark 100 table main priority 50
+if ! iptables -t mangle -C OUTPUT -p tcp --sport 22 -d "$SAFE_SSH_IP" -j MARK --set-mark 100 2>/dev/null; then
+    iptables -t mangle -I OUTPUT 1 -p tcp --sport 22 -d "$SAFE_SSH_IP" -j MARK --set-mark 100
+fi
+
+# Add IP rule (only if it doesn't exist)
+if ! ip rule show | grep -q "fwmark 0x64.*main"; then
+    ip rule add fwmark 100 table main priority 50
+fi
+
+echo "Excluding mailports"
+echo "-------------------"
 
 # SMTP ports (both directions)
 add_bypass iptables -p tcp --dport 25     # SMTP outbound
@@ -306,6 +320,9 @@ add_bypass iptables -p tcp --sport 110    # POP3 inbound
 add_bypass iptables -p tcp --dport 995    # POP3S outbound
 add_bypass iptables -p tcp --sport 995    # POP3S inbound
 
+echo "IPv6"
+echo "-------------------"
+
 # Handle IPv6 if enabled
 if ! sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null | grep -q 1; then
     echo "Configuring IPv6 mangle rules..."
@@ -325,6 +342,9 @@ add_mark ip6tables -p tcp --dport 80
 add_mark ip6tables -p tcp --dport 443
 add_mark ip6tables -p tcp --dport 53
 add_mark ip6tables -p udp --dport 53
+
+echo "Exclusing mailports IPv6"
+echo "-------------------"
 
 # E-mail
 add_bypass ip6tables -p tcp --sport 25
