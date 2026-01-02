@@ -30,10 +30,12 @@ CONSECUTIVE_REQUIRED="2"       # Must fail twice in a row
 DAILY_FAILURE_THRESHOLD="4"    # Trigger after 4 real failures per day
 
 mkdir -p "$PING_DIR"
-touch "$SCRIPT_LOG" "$FAIL_LOG" "$CURRENT_DATE_FILE" "$CONSECUTIVE_LOG"
 
-[ ! -s "$FAIL_LOG" ] && echo "FAIL_COUNT=0" > "$FAIL_LOG"
-[ ! -s "$CONSECUTIVE_LOG" ] && echo "0" > "$CONSECUTIVE_LOG"
+# Create files only if they don't exist
+[ ! -f "$SCRIPT_LOG" ] && : > "$SCRIPT_LOG"
+[ ! -f "$CURRENT_DATE_FILE" ] && : > "$CURRENT_DATE_FILE"
+[ ! -f "$FAIL_LOG" ] && echo "FAIL_COUNT=0" > "$FAIL_LOG"
+[ ! -f "$CONSECUTIVE_LOG" ] && echo "0" > "$CONSECUTIVE_LOG"
 
 echo "Monitor started" > "$SCRIPT_LOG"
 
