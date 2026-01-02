@@ -59,24 +59,30 @@ apt-get update
 apt-get install -y netfilter-persistent iptables-persistent
 
 ### 5. Restore firewall exactly as it was
-if [[ -s /root/firewall-backup/iptables.ufw.snapshot ]]; then
-    echo "Restoring IPv4 rules..."
-    iptables-restore < /root/firewall-backup/iptables.ufw.snapshot
-else
-    echo "WARNING: IPv4 snapshot missing or empty, skipping"
-fi
 
-# Restore IPv6 firewall if file exists and IPv6 is enabled
-if [[ -s /root/firewall-backup/ip6tables.ufw.snapshot ]]; then
-    if sysctl -n net.ipv6.conf.all.disable_ipv6 | grep -q 0; then
-        echo "Restoring IPv6 rules..."
-        ip6tables-restore < /root/firewall-backup/ip6tables.ufw.snapshot || true
+restore_if_exists() {
+    local file="$1"
+    local cmd="$2"
+    if [[ -s "$file" ]]; then
+        if [[ "$cmd" == "ip6tables-restore" ]]; then
+            # Skip IPv6 restore if IPv6 is disabled
+            if sysctl -n net.ipv6.conf.all.disable_ipv6 | grep -q 1; then
+                echo "IPv6 disabled, skipping $file"
+                return
+            fi
+        fi
+        echo "Restoring $file..."
+        $cmd < "$file" || echo "WARNING: $file restore failed, continuing"
     else
-        echo "IPv6 disabled, skipping IPv6 restore"
+        echo "Skipping $file, missing or empty"
     fi
-else
-    echo "INFO: IPv6 snapshot missing or empty, skipping"
-fi
+}
+
+restore_if_exists /root/firewall-backup/iptables.ufw.snapshot iptables-restore
+restore_if_exists /root/firewall-backup/ip6tables.ufw.snapshot ip6tables-restore
+restore_if_exists /root/firewall-backup/iptables.mangle.snapshot iptables-restore
+restore_if_exists /root/firewall-backup/ip6tables.mangle.snapshot ip6tables-restore
+
 
 # Verify restoration
 echo "Verifying restored rules..."
