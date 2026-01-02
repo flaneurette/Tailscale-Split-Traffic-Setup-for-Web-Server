@@ -15,6 +15,8 @@ LOG_FILE="/var/log/tailscale-routing-setup.log"
 BACKUP_DIR="/root/firewall-backup"
 ROUTING_TABLE_ID=200
 ROUTING_TABLE_NAME="tailscale"
+SAFE_SSH_IP="your.ip"
+BYPASS_MARK=100  # Mark for traffic that should NOT use Tailscale
 
 # -----------------------------
 # Setup logging and error handling
@@ -266,6 +268,15 @@ add_mark iptables -p udp --dport 53
 # Routing SSH through Tailscale can lock you out if Tailscale fails
 # Only enable if you have console access or another connection method
 # add_mark iptables -p tcp --dport 22
+
+# Get your IP
+MY_IP=$(echo $SSH_CLIENT | awk '{print $1}')
+
+# Protect SSH return path
+sudo iptables -t mangle -I OUTPUT 1 -p tcp --sport 22 -d "$MY_IP" -j MARK --set-mark 100
+sudo iptables -t mangle -I OUTPUT 1 -p tcp --sport 22 -d "$SAFE_SSH_IP" -j MARK --set-mark 100
+
+sudo ip rule add fwmark 100 table main priority 50
 
 # Handle IPv6 if enabled
 if ! sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null | grep -q 1; then
