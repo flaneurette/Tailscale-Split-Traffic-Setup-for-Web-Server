@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
 
 # Exit Node Health Monitor
 # Combines ping checks + Tailscale status + internet connectivity tests
@@ -11,9 +11,9 @@ set -euo pipefail
 # CONFIGURATION
 # ============================================================================
 
-EXIT_NODE_IP="100.xx.xx.xx" # The IP of the exit node to check.
+EXIT_NODE_IP="100.xx.xx.xx" # Exit node IP, required!
 EXIT_NODE_HOSTNAME="your-exit-node-name"  # Get this from: tailscale status
-ALERT_EMAIL="info@example.org" # YOUR E-MAIL
+ALERT_EMAIL="info@example.org" # Your e-mail for reports.
 
 PING_DIR="/var/log/exit-node"
 FAIL_LOG="$PING_DIR/fail-log.txt"
@@ -29,15 +29,24 @@ PACKET_LOSS_THRESHOLD="70"
 CONSECUTIVE_REQUIRED="2"       # Must fail twice in a row
 DAILY_FAILURE_THRESHOLD="4"    # Trigger after 4 real failures per day
 
+# ============================================================================
+# INITIALIZATION
+# ============================================================================
+
 mkdir -p "$PING_DIR"
 
-# Create files only if they don't exist
-[ ! -f "$SCRIPT_LOG" ] && : > "$SCRIPT_LOG"
-[ ! -f "$CURRENT_DATE_FILE" ] && : > "$CURRENT_DATE_FILE"
-[ ! -f "$FAIL_LOG" ] && echo "FAIL_COUNT=0" > "$FAIL_LOG"
-[ ! -f "$CONSECUTIVE_LOG" ] && echo "0" > "$CONSECUTIVE_LOG"
+# Only create files if they don't exist
+[ ! -f "$SCRIPT_LOG" ] && echo "Monitor started" > "$SCRIPT_LOG"
+[ ! -f "$CURRENT_DATE_FILE" ] && touch "$CURRENT_DATE_FILE"
 
-echo "Monitor started" > "$SCRIPT_LOG"
+# Initialize counters only if file doesn't exist or doesn't have proper format
+if [ ! -f "$FAIL_LOG" ] || ! grep -q "FAIL_COUNT=" "$FAIL_LOG" 2>/dev/null; then
+    echo "FAIL_COUNT=0" > "$FAIL_LOG"
+fi
+
+if [ ! -f "$CONSECUTIVE_LOG" ]; then
+    echo "0" > "$CONSECUTIVE_LOG"
+fi
 
 # ============================================================================
 # FUNCTIONS
@@ -86,10 +95,10 @@ check_ping() {
     log_message "Ping exit code: $ping_exit_code, Packet loss: ${packet_loss}%"
     
     if [ "$ping_exit_code" -eq 0 ] && [ "$packet_loss" -le "$PACKET_LOSS_THRESHOLD" ]; then
-        log_message "  Ping: ${packet_loss}% loss (threshold: ${PACKET_LOSS_THRESHOLD}%)"
+        log_message "  PASS: Ping ${packet_loss}% loss (threshold: ${PACKET_LOSS_THRESHOLD}%)"
         return 0
     else
-        log_message "  Ping: ${packet_loss}% loss (threshold: ${PACKET_LOSS_THRESHOLD}%)"
+        log_message "  FAIL: Ping ${packet_loss}% loss (threshold: ${PACKET_LOSS_THRESHOLD}%)"
         return 1
     fi
 }
@@ -98,10 +107,15 @@ check_tailscale_daemon() {
     log_message "--- Tailscale Daemon Check ---"
     
     if systemctl is-active --quiet tailscaled; then
-        log_message "  Tailscale daemon running"
-        return 0
+        if tailscale status >/dev/null 2>&1; then
+            log_message "  PASS: Tailscale daemon running and responsive"
+            return 0
+        else
+            log_message "  FAIL: Tailscale daemon running but not responsive"
+            return 1
+        fi
     else
-        log_message "  Tailscale daemon not running"
+        log_message "  FAIL: Tailscale daemon not running"
         return 1
     fi
 }
@@ -109,18 +123,20 @@ check_tailscale_daemon() {
 check_peer_status() {
     log_message "--- Peer Status Check ---"
     
-    # Check if peer is online in tailnet
-    peer_online=$(tailscale status --json 2>/dev/null | jq -r ".Peer[] | select(.HostName==\"$EXIT_NODE_HOSTNAME\") | .Online" || echo "false")
+    if ! tailscale status >/dev/null 2>&1; then
+        log_message "  FAIL: Cannot get Tailscale status (Tailscale may be stopped)"
+        return 1
+    fi
+    
+    peer_online=$(tailscale status --json 2>/dev/null | jq -r ".Peer[] | select(.HostName==\"$EXIT_NODE_HOSTNAME\") | .Online" 2>/dev/null || echo "false")
     
     if [ "$peer_online" = "true" ]; then
-        log_message "  Exit node peer online in tailnet"
-        
-        # Get additional peer info
-        peer_addr=$(tailscale status --json 2>/dev/null | jq -r ".Peer[] | select(.HostName==\"$EXIT_NODE_HOSTNAME\") | .CurAddr" || echo "unknown")
-        log_message "Peer address: $peer_addr"
+        log_message "  PASS: Exit node peer online in tailnet"
+        peer_addr=$(tailscale status --json 2>/dev/null | jq -r ".Peer[] | select(.HostName==\"$EXIT_NODE_HOSTNAME\") | .CurAddr" 2>/dev/null || echo "unknown")
+        log_message "  INFO: Peer address: $peer_addr"
         return 0
     else
-        log_message "Exit node peer offline or not found in tailnet"
+        log_message "  FAIL: Exit node peer offline or not found in tailnet"
         return 1
     fi
 }
@@ -128,17 +144,20 @@ check_peer_status() {
 check_exit_node_active() {
     log_message "--- Exit Node Active Check ---"
     
-    exit_active=$(tailscale status --json 2>/dev/null | jq -r '.ExitNodeStatus.Online // false' || echo "false")
+    if ! tailscale status >/dev/null 2>&1; then
+        log_message "  FAIL: Cannot get Tailscale status (Tailscale may be stopped)"
+        return 1
+    fi
+    
+    exit_active=$(tailscale status --json 2>/dev/null | jq -r '.ExitNodeStatus.Online // false' 2>/dev/null || echo "false")
     
     if [ "$exit_active" = "true" ]; then
-        log_message "  Exit node actively routing traffic"
-        
-        # Get exit node ID
-        exit_id=$(tailscale status --json 2>/dev/null | jq -r '.ExitNodeStatus.ID // "unknown"' || echo "unknown")
-        log_message "Exit node ID: $exit_id"
+        log_message "  PASS: Exit node actively routing traffic"
+        exit_id=$(tailscale status --json 2>/dev/null | jq -r '.ExitNodeStatus.ID // "unknown"' 2>/dev/null || echo "unknown")
+        log_message "  INFO: Exit node ID: $exit_id"
         return 0
     else
-        log_message "  Exit node not actively routing traffic"
+        log_message "  FAIL: Exit node not actively routing traffic"
         return 1
     fi
 }
@@ -146,7 +165,6 @@ check_exit_node_active() {
 check_internet_connectivity() {
     log_message "--- Internet Connectivity Check ---"
     
-    # Try multiple reliable endpoints
     local test_urls=(
         "https://www.cloudflare.com/cdn-cgi/trace"
         "https://www.google.com"
@@ -156,19 +174,19 @@ check_internet_connectivity() {
     local success=0
     for url in "${test_urls[@]}"; do
         if curl -s --max-time 10 "$url" > /dev/null 2>&1; then
-            log_message "Can reach: $url"
+            log_message "  PASS: Can reach: $url"
             success=1
             break
         else
-            log_message "Cannot reach: $url"
+            log_message "  FAIL: Cannot reach: $url"
         fi
     done
     
     if [ $success -eq 1 ]; then
-        log_message "Internet connectivity working"
+        log_message "  PASS: Internet connectivity working"
         return 0
     else
-        log_message "All internet connectivity tests failed"
+        log_message "  FAIL: All internet connectivity tests failed"
         return 1
     fi
 }
@@ -182,7 +200,6 @@ perform_comprehensive_health_check() {
     local checks_total=5
     local check_results=()
     
-    # Run all checks
     if check_ping; then
         ((checks_passed++))
         check_results+=("PASS")
@@ -227,16 +244,14 @@ perform_comprehensive_health_check() {
     log_message "  5. Internet:           ${check_results[4]}"
     log_message "========================================="
     
-    # Consider healthy if at least 4/5 checks pass
-    # OR if ping + internet both pass (core functionality)
     if [ $checks_passed -ge 4 ]; then
-        log_message "EXIT NODE HEALTHY (${checks_passed}/${checks_total} passed)"
+        log_message "RESULT: EXIT NODE HEALTHY (${checks_passed}/${checks_total} passed)"
         return 0
     elif [ "${check_results[0]}" = "PASS" ] && [ "${check_results[4]}" = "PASS" ]; then
-        log_message "EXIT NODE HEALTHY (core checks passed: ping + internet)"
+        log_message "RESULT: EXIT NODE HEALTHY (core checks passed: ping + internet)"
         return 0
     else
-        log_message "EXIT NODE UNHEALTHY (only ${checks_passed}/${checks_total} passed)"
+        log_message "RESULT: EXIT NODE UNHEALTHY (only ${checks_passed}/${checks_total} passed)"
         return 1
     fi
 }
@@ -249,7 +264,6 @@ log_message ""
 log_message "========================================="
 log_message "EXIT NODE MONITOR STARTED"
 log_message "========================================="
-
 
 # Daily reset check
 CURRENT_DATE=$(date +%d/%m/%Y)
@@ -266,8 +280,8 @@ fail_count=$(get_fail_count)
 consecutive=$(get_consecutive)
 
 log_message "Current counters:"
-log_message "- Daily failures: $fail_count/$DAILY_FAILURE_THRESHOLD"
-log_message "- Consecutive failures: $consecutive/$CONSECUTIVE_REQUIRED"
+log_message "  - Daily failures: $fail_count/$DAILY_FAILURE_THRESHOLD"
+log_message "  - Consecutive failures: $consecutive/$CONSECUTIVE_REQUIRED"
 
 # Exit if already disabled today
 if [ "$fail_count" -ge "$DAILY_FAILURE_THRESHOLD" ]; then
@@ -305,9 +319,9 @@ else
         # Check if we've reached daily threshold
         if [ "$fail_count" -ge "$DAILY_FAILURE_THRESHOLD" ]; then
             log_message ""
-            log_message "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            log_message "!!! THRESHOLD REACHED - TAKING ACTION !!!"
-            log_message "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            log_message "========================================"
+            log_message "THRESHOLD REACHED - TAKING ACTION"
+            log_message "========================================"
             
             # Prepare detailed alert
             ALERT_BODY="CRITICAL: Exit Node Failure Detected
