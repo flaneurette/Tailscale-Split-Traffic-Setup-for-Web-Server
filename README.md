@@ -97,6 +97,8 @@ NOTE: Run this on the PUBLIC server, NOT the exit node
 During installation of tailscale, you are being shown a URI. Use: `Ctrl+Shift+C` to open that URI in your browser, then you need to accept the device in the tailscale admin.
 If it fails, run the script for a second time. It will usually run and fix things properly.
 
+> Now also move `undo-routing.sh` to the same folder. This is used to undo all routing tables for tailscale, in case of emergency or error.
+
 ## How the split tunneling works
 
 Here's what happens with the configuration:
