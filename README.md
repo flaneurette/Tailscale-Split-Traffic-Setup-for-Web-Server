@@ -89,6 +89,9 @@ Configure the public webserver (with split tunneling)
 
 Edit `create-routing.sh`, or leave as is. This is where we configure selective routing. We'll route ports 80, 443, 22, and 53 through Tailscale, but keep email ports (25, 465, 587, 993, 995) direct.
 
+> Be sure to set a backup IP address for SSH access: `SAFE_SSH_IP="your.backup.ssh.ip"`
+> By default, the script also adds your curent SSH client IP, to prevent lockouts.
+
 NOTE: Run this on the PUBLIC server, NOT the exit node
 - Move `create-routing.sh` to /root/ or /usr/local/bin/
 - Make executable: `chmod +x create-routing.sh`
@@ -105,13 +108,13 @@ Then do this:
 
 `sudo systemctl enable tailscale-routing.service`
 
-`sudo tailscale up --accept-routes=true --advertise-exit-node=false`
+`tailscale up --accept-routes=false --advertise-exit-node=false --exit-node-allow-lan-access --exit-node=<EXIT.NODE.IP.HERE>`
+
+To survive reboots. Remember to replace the EXIT NODE IP with the VPS exit node (not your public webserver IP)
 
 If not working:
 
 `sudo tailscale up --reset`
-
-To survive reboots. Remember to replace the IP with the VPS exit node (not your public webserver IP)
 
 
 ## How the split tunneling works
