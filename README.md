@@ -1,6 +1,6 @@
 # Using Tailscale split traffic tunnels.
 
-One powerful feature of Tailscale is the exit node function. If you have a public webserver, you can route all outbound traffic (like `apt updates`, `curl`, or `wget` requests) through another machine on your Tailscale network, such as a home server. This means your server's requests appear to come from your home IP or other VPS IP, instead of the public server VPS IP.
+One powerful feature of Tailscale is the exit node function. If you have a public webserver, you can route all outbound traffic (like `apt updates`, `curl`, or `wget` requests) through another machine on your Tailscale network, such as a home server or other cheap VPS. This means your server's requests appear to come from your home IP or other VPS IP, instead of the public server VPS IP.
 
 ```
 ┌─────────────────────┐
