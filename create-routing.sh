@@ -259,8 +259,8 @@ add_mark iptables -p tcp --dport 443
 # 2. You understand it may cause connectivity issues
 # 3. You have another way to access the server if DNS breaks
 # Uncomment at your own risk:
-# add_mark iptables -p tcp --dport 53
-# add_mark iptables -p udp --dport 53
+add_mark iptables -p tcp --dport 53
+add_mark iptables -p udp --dport 53
 
 # SECURITY WARNING: Uncomment SSH carefully!
 # Routing SSH through Tailscale can lock you out if Tailscale fails
@@ -284,8 +284,8 @@ if ! sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null | grep -q 1; then
     
     add_mark ip6tables -p tcp --dport 80
     add_mark ip6tables -p tcp --dport 443
-    # add_mark ip6tables -p tcp --dport 53
-    # add_mark ip6tables -p udp --dport 53
+    add_mark ip6tables -p tcp --dport 53
+    add_mark ip6tables -p udp --dport 53
 else
     echo "IPv6 disabled, skipping IPv6 rules"
 fi
