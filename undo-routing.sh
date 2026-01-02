@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# This script can be used in emergency, when the homeserver or second VPS experienced downtime, or problems.
+# This script can be used in emergency, when the homeserver or second VPS experiences extreme downtime, or problems.
 # Move the scrip to /root/ or /usr/local/bin/
 # Make it executable: chmod +x ./undo-routing.sh
-# Run in case of emergency on publick webserver: sudo ./undo-routing.sh
+# Run in case of emergency on public webserver: sudo ./undo-routing.sh
 
 set -e
 
