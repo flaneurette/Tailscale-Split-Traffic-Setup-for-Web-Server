@@ -15,7 +15,7 @@ LOG_FILE="/var/log/tailscale-routing-setup.log"
 BACKUP_DIR="/root/firewall-backup"
 ROUTING_TABLE_ID=200
 ROUTING_TABLE_NAME="tailscale"
-SAFE_SSH_IP="your.ip"
+SAFE_SSH_IP="your.backup.ssh.ip"
 BYPASS_MARK=100  # Mark for traffic that should NOT use Tailscale
 
 # -----------------------------
@@ -215,6 +215,19 @@ fi
 CURRENT_STEP="8/11: Adding packet marking rules"
 echo "[$CURRENT_STEP]"
 
+# Function to add bypass rules (mark 100 = use main table, NOT Tailscale)
+add_bypass() {
+    local table="$1"
+    shift
+    
+    if ! $table -t mangle -C OUTPUT "$@" -j MARK --set-mark $BYPASS_MARK 2>/dev/null; then
+        $table -t mangle -A OUTPUT "$@" -j MARK --set-mark $BYPASS_MARK
+        echo "Added bypass: $table $*"
+    else
+        echo "Bypass exists: $table $*"
+    fi
+}
+
 # Function to add marking rules (idempotent)
 add_mark() {
     local table="$1"
@@ -256,11 +269,6 @@ add_mark iptables -p tcp --dport 80
 add_mark iptables -p tcp --dport 443
 
 # DNS ROUTING WARNING: Routing DNS through Tailscale can cause issues
-# because Tailscale itself needs DNS to function. Only enable this if:
-# 1. Your exit node has reliable DNS resolution
-# 2. You understand it may cause connectivity issues
-# 3. You have another way to access the server if DNS breaks
-# Uncomment at your own risk:
 add_mark iptables -p tcp --dport 53
 add_mark iptables -p udp --dport 53
 
@@ -278,6 +286,26 @@ sudo iptables -t mangle -I OUTPUT 1 -p tcp --sport 22 -d "$SAFE_SSH_IP" -j MARK 
 
 sudo ip rule add fwmark 100 table main priority 50
 
+# SMTP ports (both directions)
+add_bypass iptables -p tcp --dport 25     # SMTP outbound
+add_bypass iptables -p tcp --sport 25     # SMTP inbound
+add_bypass iptables -p tcp --dport 465    # SMTPS outbound
+add_bypass iptables -p tcp --sport 465    # SMTPS inbound
+add_bypass iptables -p tcp --dport 587    # Submission outbound
+add_bypass iptables -p tcp --sport 587    # Submission inbound
+
+# IMAP ports
+add_bypass iptables -p tcp --dport 143    # IMAP outbound
+add_bypass iptables -p tcp --sport 143    # IMAP inbound
+add_bypass iptables -p tcp --dport 993    # IMAPS outbound
+add_bypass iptables -p tcp --sport 993    # IMAPS inbound
+
+# POP3 ports
+add_bypass iptables -p tcp --dport 110    # POP3 outbound
+add_bypass iptables -p tcp --sport 110    # POP3 inbound
+add_bypass iptables -p tcp --dport 995    # POP3S outbound
+add_bypass iptables -p tcp --sport 995    # POP3S inbound
+
 # Handle IPv6 if enabled
 if ! sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null | grep -q 1; then
     echo "Configuring IPv6 mangle rules..."
@@ -293,10 +321,26 @@ if ! sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null | grep -q 1; then
         echo "Added IPv6 exclusion for Tailscale range"
     fi
     
-    add_mark ip6tables -p tcp --dport 80
-    add_mark ip6tables -p tcp --dport 443
-    add_mark ip6tables -p tcp --dport 53
-    add_mark ip6tables -p udp --dport 53
+add_mark ip6tables -p tcp --dport 80
+add_mark ip6tables -p tcp --dport 443
+add_mark ip6tables -p tcp --dport 53
+add_mark ip6tables -p udp --dport 53
+
+# E-mail
+add_bypass ip6tables -p tcp --sport 25
+add_bypass ip6tables -p tcp --dport 465
+add_bypass ip6tables -p tcp --sport 465
+add_bypass ip6tables -p tcp --dport 587
+add_bypass ip6tables -p tcp --sport 587
+add_bypass ip6tables -p tcp --dport 993
+add_bypass ip6tables -p tcp --sport 993
+add_bypass ip6tables -p tcp --dport 995
+add_bypass ip6tables -p tcp --sport 995
+add_bypass ip6tables -p tcp --dport 143
+add_bypass ip6tables -p tcp --sport 143
+add_bypass ip6tables -p tcp --dport 110
+add_bypass ip6tables -p tcp --sport 110
+
 else
     echo "IPv6 disabled, skipping IPv6 rules"
 fi
