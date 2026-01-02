@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ===================================================================
-# Tailscale Selective Routing Setup (Improved)
+# Tailscale Selective Routing Setup
 # ===================================================================
 # NOTE: Run this on the PUBLIC server, NOT the exit node
 # Move to /root/ or /usr/local/bin/
@@ -15,7 +15,7 @@ LOG_FILE="/var/log/tailscale-routing-setup.log"
 BACKUP_DIR="/root/firewall-backup"
 ROUTING_TABLE_ID=200
 ROUTING_TABLE_NAME="tailscale"
-SAFE_SSH_IP="your.backup.ssh.ip"
+SAFE_SSH_IP="your.backup.ssh.ip" # Not your private IP, that is already automatically added. Just a 2nd or 3rd IP, REQUIRED! Hint: Could also be the IP of your public server!)
 BYPASS_MARK=100  # Mark for traffic that should NOT use Tailscale
 
 # -----------------------------
