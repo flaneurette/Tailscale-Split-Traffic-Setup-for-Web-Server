@@ -130,6 +130,21 @@ And try again. Remember, a small error doesn't mean it didn't work. Simply check
 
 `curl -s icanhazip.com ` -> should show your exit node IP.
 
+### Exit node health check
+
+To  monitor the status of the exit node **automatically**, upload the script: `check-exit-node.sh` to your root folder. Edit all parameters, such as your exit node IP, email address, and exit node name.
+
+Then create a crontab, running every 2 hours.
+
+`sudo crontab -e`
+
+Then add:
+
+`0 */2 * * * /root/check-exit-node.sh`
+
+If the exit node becomes unresponsive, fails, or cannot be reached through pinging, the script will send an e-mail to the admin. In total the script checks 5 different methods to ensure the IP is truly down. If it is, it shuts down tailscale automatically, and sends a report through e-mail.
+
+
 ## How the split tunneling works
 
 Here's what happens with the configuration:
