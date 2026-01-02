@@ -183,7 +183,8 @@ echo "=== SETUP COMPLETE ==="
 echo
 echo "Exit node IP (check if it uses your other server IP):"
 echo "----------------------"
-curl icanhazip.com
+IP=$(curl -s icanhazip.com || echo "ERROR")
+echo "Exit node IP: $IP"
 echo
 echo "Tailscale status:"
 echo "----------------------"
