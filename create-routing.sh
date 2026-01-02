@@ -86,7 +86,7 @@ restore_if_exists /root/firewall-backup/ip6tables.mangle.snapshot ip6tables-rest
 
 # Verify restoration
 echo "Verifying restored rules..."
-iptables -L -n | head -20
+{ iptables -L -n | head -20; } || true
 
 ### 6. Create routing table safely
 echo "[6/10] Ensuring Tailscale routing table exists..."
