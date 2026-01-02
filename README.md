@@ -1,6 +1,6 @@
 # Using Tailscale split traffic tunnels.
 
-One powerful feature of Tailscale is the exit node function. If you have a public webserver, you can route all outbound traffic (like `apt updates`, `curl`, or `wget` requests) through another machine on your Tailscale network, such as a home server. This means your server's requests appear to come from your home IP instead of the VPS IP.
+One powerful feature of Tailscale is the exit node function. If you have a public webserver, you can route all outbound traffic (like `apt updates`, `curl`, or `wget` requests) through another machine on your Tailscale network, such as a home server. This means your server's requests appear to come from your home IP or other VPS IP instead of the public server VPS IP.
 
 ## Benefits
 
@@ -8,9 +8,11 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 
 - Traffic encryption beyond the server: Even if someone is monitoring the network at your data center, they only see encrypted Tailscale traffic. The actual destinations and content of your requests are hidden.
 
-- Custom DNS filtering: Route traffic through a home network with advanced DNS blocklists (e.g., Pi-hole, AdGuard Home, or NextDNS at the router level). This prevents your server from connecting to known malware domains, botnet C&C servers, or newly registered domains often used in attacks. If a connection is made to a (botnet) C&C server, it will give the wrong IP to them. Rending any attack useless at the ISP level.
+- Custom DNS filtering: Route traffic through a home network with advanced DNS blocklists (e.g., Pi-hole, AdGuard Home, or NextDNS at the router level). This prevents your server from connecting to known malware domains, botnet C&C servers, or newly registered domains often used in attacks.
+  
+- Decoy IP address: If your server is compromised and connects to a botnet C&C server or phone-home endpoint, the attacker receives your home or other VPS IP instead of your server's IP. This renders ISP-level attacks against your server useless, as they would target the wrong infrastructure. The attacker cannot DDoS your server or use your server IP for further attacks since they don't actually have it.
 
-- Centralized monitoring: By routing through your home network, you gain visibility into your server's outbound connections. You can detect unusual patterns and quickly block suspicious traffic if your server is compromised.
+- Email compatibility: By excluding email ports from the tunnel, your mail server maintains proper SPF, DKIM, and reverse DNS records, ensuring email deliverability isn't affected.
 
 - Reduce "phone-home" calls: If your server or any installed software were compromised, DNS filtering and traffic monitoring can help block or detect unauthorized communication attempts.
 
