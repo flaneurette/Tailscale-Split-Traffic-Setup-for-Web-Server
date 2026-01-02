@@ -273,10 +273,11 @@ add_mark iptables -p tcp --dport 443
 add_mark iptables -p tcp --dport 53
 add_mark iptables -p udp --dport 53
 
-# SECURITY WARNING: Uncomment SSH carefully!
+# SECURITY WARNING: Uncomment GLOBAL SSH carefully!
 # Routing SSH through Tailscale can lock you out if Tailscale fails
 # Only enable if you have console access or another connection method
 # add_mark iptables -p tcp --dport 22
+# Usually not required!
 
 echo "Excluding SSH"
 echo "-------------------"
@@ -344,7 +345,7 @@ add_mark ip6tables -p tcp --dport 443
 add_mark ip6tables -p tcp --dport 53
 add_mark ip6tables -p udp --dport 53
 
-echo "Exclusing mailports IPv6"
+echo "Excluding mailports IPv6"
 echo "-------------------"
 
 # E-mail
