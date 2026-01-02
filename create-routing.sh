@@ -152,8 +152,11 @@ netfilter-persistent save
 # -----------------------------
 # 11. Systemd service
 # -----------------------------
+
 echo "[10/10] Installing systemd service..."
-cat >/etc/systemd/system/tailscale-routing.service <<'EOF'
+SERVICE_FILE=/etc/systemd/system/tailscale-routing.service
+
+cat >"$SERVICE_FILE" <<'EOF'
 [Unit]
 Description=Tailscale selective routing
 After=network-online.target tailscaled.service
@@ -164,25 +167,26 @@ Requires=tailscaled.service
 Type=oneshot
 RemainAfterExit=yes
 
-# Wait for interface
+# Wait for tailscale0 interface
 ExecStartPre=/bin/sh -c 'for i in $(seq 1 30); do ip link show tailscale0 >/dev/null 2>&1 && break || sleep 1; done'
 
-# Cleanup existing rules
+# Clean up old rules (ignore errors)
 ExecStartPre=-/usr/sbin/ip rule del fwmark 200 table tailscale
 ExecStartPre=-/usr/sbin/ip route flush table tailscale
 
-# Add routing rules
-ExecStart=/usr/sbin/ip route add default dev tailscale0 table tailscale
-ExecStart=/usr/sbin/ip rule add fwmark 200 table tailscale priority 100
+# Add policy routing safely
+ExecStart=/usr/sbin/ip route add default dev tailscale0 table tailscale || true
+ExecStart=/usr/sbin/ip rule add fwmark 200 table tailscale priority 100 || true
 
 # Cleanup on stop
-ExecStop=/usr/sbin/ip rule del fwmark 200 table tailscale
-ExecStop=/usr/sbin/ip route flush table tailscale
+ExecStop=/usr/sbin/ip rule del fwmark 200 table tailscale || true
+ExecStop=/usr/sbin/ip route flush table tailscale || true
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
+# Reload systemd and enable/start service
 systemctl daemon-reload
 systemctl enable tailscale-routing.service
 systemctl start tailscale-routing.service
