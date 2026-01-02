@@ -37,7 +37,7 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
   > If you are locked out from SSH, type in the VNC console: `tailscale down`
   > This gives you access again.
 
-> The setup uses about 300MB RAM in total, if you run: NGINX, Tailscale, and various required packages. No database required.
+> The setup uses about 200 to 300MB RAM (tops) in total, if you run latest Ubuntu with all upgrades, NGINX, Tailscale, and various required packages. No database required.
 
 ## Benefits
 
