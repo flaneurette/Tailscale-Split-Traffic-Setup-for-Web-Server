@@ -193,7 +193,7 @@ Enable:
 
 ---
 
-## 8. Bottom line (important)
+## Bottom line
 
 Your home exit node is safer than a commercial VPN endpoint.
 
