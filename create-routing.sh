@@ -2,6 +2,11 @@
 set -euo pipefail
 
 # NOTE: RUN THIS ON THE PUBLIC WEBSERVER, NOT HOME/VPS EXIT NODE
+# Move the scrip to /root/ or /usr/local/bin/
+# Make it executable: chmod +x ./create-routing.sh
+# Run: sudo ./undo-routing.sh
+
+# Script assumes: tailscaled.service, but could be: tailscale.service in some cases (without the d). Manually edit this script to change!
 
 echo "=== Tailscale Selective Routing Setup ==="
 echo "WARNING: This will replace UFW with iptables-persistent"
