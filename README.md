@@ -32,6 +32,10 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 - Your public webserver (Linux)
 - A cheap low key VPS with dedicated IP (few specs, use the cheapest you can get: 1 or 2 cores, 1-4GB RAM.) i.e. https://lowendbox.com
 - OR: A small home server, instead of the cheap VPS.
+
+  > Important: have ISP VNC console access at your host, for both servers. If SSH somehow is locked out, you need VNC access.
+  > If you are locked out from SSH, type in the VNC console: `tailscale down`
+  > This gives you access again.
   
 ## Benefits
 
