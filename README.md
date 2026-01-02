@@ -17,7 +17,7 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 ┌─────────────────────┐
 │  Exit Node VPS      │  (Cheap throwaway VPS - $1-5/mo - or home server)
 │  - 1-2 CPU cores    │
-│  - 512MB-1GB RAM    │  Minimal specs needed
+│  - 512MB-1GB RAM    │  Minimal specs needed, extremely hardened: only tailscale running, nothing else.
 │  - 10-20GB storage  │
 │  - Tailscale only   │
 │  - DNS filtering    │
