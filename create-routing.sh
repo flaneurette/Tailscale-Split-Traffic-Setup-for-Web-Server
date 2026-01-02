@@ -1,5 +1,6 @@
 #!/bin/bash
-set -euo pipefail
+set -e
+set -o pipefail
 
 # NOTE: RUN THIS ON THE PUBLIC WEBSERVER, NOT HOME/VPS EXIT NODE
 # Move the scrip to /root/ or /usr/local/bin/
@@ -58,9 +59,24 @@ apt-get update
 apt-get install -y netfilter-persistent iptables-persistent
 
 ### 5. Restore firewall exactly as it was
-echo "[5/10] Restoring firewall snapshot..."
-iptables-restore < /root/firewall-backup/iptables.ufw.snapshot || true
-ip6tables-restore < /root/firewall-backup/ip6tables.ufw.snapshot || true
+if [[ -s /root/firewall-backup/iptables.ufw.snapshot ]]; then
+    echo "Restoring IPv4 rules..."
+    iptables-restore < /root/firewall-backup/iptables.ufw.snapshot
+else
+    echo "WARNING: IPv4 snapshot missing or empty, skipping"
+fi
+
+# Restore IPv6 firewall if file exists and IPv6 is enabled
+if [[ -s /root/firewall-backup/ip6tables.ufw.snapshot ]]; then
+    if sysctl -n net.ipv6.conf.all.disable_ipv6 | grep -q 0; then
+        echo "Restoring IPv6 rules..."
+        ip6tables-restore < /root/firewall-backup/ip6tables.ufw.snapshot || true
+    else
+        echo "IPv6 disabled, skipping IPv6 restore"
+    fi
+else
+    echo "INFO: IPv6 snapshot missing or empty, skipping"
+fi
 
 # Verify restoration
 echo "Verifying restored rules..."
