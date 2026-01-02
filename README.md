@@ -2,6 +2,31 @@
 
 One powerful feature of Tailscale is the exit node function. If you have a public webserver, you can route all outbound traffic (like `apt updates`, `curl`, or `wget` requests) through another machine on your Tailscale network, such as a home server. This means your server's requests appear to come from your home IP or other VPS IP, instead of the public server VPS IP.
 
+```
+┌─────────────────────┐
+│  Public Web Server  │  (Your main VPS - $10-20/mo)
+│  - Web services     │
+│  - Email (direct)   │  Email uses public IP (ports 25, 587, 993)
+│  - Public facing    │
+└──────────┬──────────┘
+           │
+           │ Tailscale encrypted tunnel route all outbound traffic, not inbound (web) traffic.
+           │ (HTTP/HTTPS/SSH/DNS/apt traffic)
+           │
+           ▼
+┌─────────────────────┐
+│  Exit Node VPS      │  (Cheap throwaway VPS - $1-5/mo - or home server)
+│  - 1-2 CPU cores    │
+│  - 512MB-1GB RAM    │  Minimal specs needed
+│  - 10-20GB storage  │
+│  - Tailscale only   │
+│  - DNS filtering    │
+└──────────┬──────────┘
+           │
+           ▼
+      Internet
+```
+
 ## Requirements:
 
 - Your public webserver (Linux)
