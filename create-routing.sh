@@ -130,8 +130,9 @@ add_mark() {
 # Mark selective traffic
 add_mark -p tcp --dport 80
 add_mark -p tcp --dport 443
-add_mark -p tcp --dport 53
-add_mark -p udp --dport 53
+# add_mark -p tcp --dport 22
+# add_mark -p tcp --dport 53
+# add_mark -p udp --dport 53
 
 # -----------------------------
 # 9. Policy routing
