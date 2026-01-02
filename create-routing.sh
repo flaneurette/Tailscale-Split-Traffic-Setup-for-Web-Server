@@ -510,7 +510,7 @@ if [[ "$REGULAR_IP" != "$ROUTED_IP" ]] && [[ "$ROUTED_IP" != "FAILED" ]] && [[ "
 else
     echo "WARNING: Routing may not be working as expected"
     echo "  This could be normal if your Tailscale exit node has the same public IP"
-    echo "  Or if the test failed to connect properly"
+    echo "  Or if the test failed to connect properly. Follow the final step in the README!"
 fi
 
 # -----------------------------
@@ -543,15 +543,6 @@ echo ""
 echo "Packet Marking Rules:"
 echo "----------------------"
 iptables -t mangle -L OUTPUT -n -v --line-numbers | head -20
-echo ""
-
-echo "Active Ports Being Routed:"
-echo "----------------------"
-echo "TCP 80 (HTTP)"
-echo "TCP 443 (HTTPS)"
-echo "TCP 53 (DNS) - Disabled by default (can cause issues)"
-echo "UDP 53 (DNS) - Disabled by default (can cause issues)"
-echo "TCP 22 (SSH) - Disabled by default for safety"
 echo ""
 
 echo "Manual Verification Commands:"
