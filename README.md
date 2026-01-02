@@ -99,6 +99,13 @@ If it fails, run the script for a second time. It will usually run and fix thing
 
 > Now also move `undo-routing.sh` to the same folder. This is used to undo all routing tables for tailscale, in case of emergency or error.
 
+Then do this:
+
+`sudo tailscale up --exit-node=<IP.EXIT.NODE> -accept-routes=false --advertise-exit-node=false`
+
+To survive reboots. Rememeber to replace the IP with the VPS exit node (not your public webserver IP)
+
+
 ## How the split tunneling works
 
 Here's what happens with the configuration:
