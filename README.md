@@ -4,7 +4,7 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 
 ## Benefits
 
-- Public IP protection: Your public server's IP is never exposed when downloading packages or making external requests. This reduces your attack surface and makes it harder for malicious actors to profile your server's behavior.
+- Public IP protection: Your public server's IP is never exposed when downloading packages or making external requests. This reduces your attack surface, reduces MITM attacks, ISP downtimes, and makes it harder for malicious actors to profile your server's behavior.
 
 - Traffic encryption beyond the server: Even if someone is monitoring the network at your data center, they only see encrypted Tailscale traffic. The actual destinations and content of your requests are hidden.
 
