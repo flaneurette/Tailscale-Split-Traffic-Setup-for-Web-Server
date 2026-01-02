@@ -103,7 +103,7 @@ NOTE: Run this on the PUBLIC server, NOT the exit node
 During installation of tailscale, you are being shown a URI. Use: `Ctrl+Shift+C` to open that URI in your browser, then you need to accept the device in the tailscale admin.
 If it fails, run the script for a second time. It will usually run and fix things properly.
 
-Then do this:
+### Then you MUST do this:
 
 `systemctl restart tailscaled`
 
@@ -117,6 +117,11 @@ If not working:
 
 `sudo tailscale up --reset`
 
+`undo-routing.sh`
+
+And try again. Remember, a small error doesn't mean it didn't work. Simply check if the connections are routed:
+
+`curl -s icanhazip.com ` -> should show your exit node IP.
 
 ## How the split tunneling works
 
