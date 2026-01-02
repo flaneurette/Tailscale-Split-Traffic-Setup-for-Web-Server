@@ -36,7 +36,9 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
   > Important: have ISP VNC console access at your host, for both servers. If SSH somehow is locked out, you need VNC access.
   > If you are locked out from SSH, type in the VNC console: `tailscale down`
   > This gives you access again.
-  
+
+> The setup uses about 300MB RAM in total, if you run: NGINX, Tailscale, and various required packages. No database required.
+
 ## Benefits
 
 - Public IP protection: Your public server's IP is never exposed when downloading packages or making external requests. This reduces your attack surface, reduces MITM attacks, ISP downtimes, and makes it harder for malicious actors to profile your server's behavior.
