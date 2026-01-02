@@ -103,7 +103,7 @@ Then do this:
 
 `systemctl restart tailscaled`
 
-`sudo tailscale up --exit-node=<IP.EXIT.NODE> --accept-routes`
+`sudo tailscale up`
 
 `sudo systemctl enable tailscale-routing.service`
 
