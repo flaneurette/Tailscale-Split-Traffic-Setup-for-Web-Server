@@ -25,11 +25,11 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 echo "=== Setup started at $(date) ==="
 
 cleanup_on_error() {
-    echo "ERROR: Setup failed at step $CURRENT_STEP, attempting rollback..."
-    systemctl stop tailscale-routing.service 2>/dev/null || true
-    systemctl disable tailscale-routing.service 2>/dev/null || true
-    ip rule del fwmark $ROUTING_TABLE_ID table $ROUTING_TABLE_NAME 2>/dev/null || true
-    ip route flush table $ROUTING_TABLE_NAME 2>/dev/null || true
+    echo "ERROR: Setup failed at step $CURRENT_STEP, might not be serious. Remember to manually start the device with: tailscale up --accept-routes=false --advertise-exit-node=false --exit-node-allow-lan-access --exit-node=<EXIT.NODE.IP.HERE>"
+    echo "--------------------------------------------------------------------------"
+    echo "If error is serious, run: tailscale up --reset"
+    echo "Then run: undo-routing.sh, and try again."
+    echo "--------------------------------------------------------------------------"
     echo "Check logs in $LOG_FILE"
     echo "Manual rollback: iptables-restore < $BACKUP_DIR/iptables.ufw.snapshot"
     exit 1
@@ -124,7 +124,7 @@ fi
 # -----------------------------
 # 4. Start Tailscale
 # -----------------------------
-CURRENT_STEP="4/11: Bringing Tailscale up"
+CURRENT_STEP="4/11: Bringing "
 echo "[$CURRENT_STEP]"
 tailscale up --accept-routes=false --advertise-exit-node=false || true
 
@@ -479,7 +479,7 @@ echo "Systemd service installed and started"
 # Restart Tailscale to ensure clean state
 systemctl restart tailscaled
 sleep 2
-tailscale up --accept-routes=false --advertise-exit-node=false
+# tailscale up --accept-routes=false --advertise-exit-node=false
 
 # -----------------------------
 # Testing and verification
