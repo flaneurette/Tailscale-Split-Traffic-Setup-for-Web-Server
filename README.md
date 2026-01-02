@@ -1,4 +1,4 @@
-# Using Tailscale Exit Nodes for Secure Server Traffic
+# Using Tailscale exit nodes for secure server traffic
 
 One powerful feature of Tailscale is the exit node function. If you have a public webserver, you can route all outbound traffic (like `apt updates`, `curl`, or `wget` requests) through another machine on your Tailscale network, such as a home server. This means your server's requests appear to come from your home IP instead of the VPS IP.
 
@@ -14,7 +14,7 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 
 - Reduce "phone-home" calls: If your server or any installed software were compromised, DNS filtering and traffic monitoring can help block or detect unauthorized communication attempts.
 
-## How Tailscale Exit Nodes Work
+## How Tailscale exit nodes work
 
 When you configure a device as an exit node:
 - It advertises itself to your Tailscale network (tailnet)
@@ -22,9 +22,9 @@ When you configure a device as an exit node:
 - All traffic is encrypted end-to-end using WireGuard
 - Only authenticated devices in your tailnet can use it - there's no public access
 
-## Setup Guide
+## Setup guide
 
-### 1. Set Up the Home Server (Exit Node)
+### 1. Set up the home server (exit node)
 
 ```bash
 # Install Tailscale
@@ -48,7 +48,7 @@ Important: After running `--advertise-exit-node`, you must approve this in the T
 3. Click the three dots menu
 4. Enable "Use as exit node"
 
-### 2. Configure the Public Webserver
+### 2. Configure the public webserver
 
 ```bash
 # Install Tailscale
@@ -62,7 +62,7 @@ sudo tailscale up --exit-node=<HomeServerName> --accept-dns
 # - The Tailscale IP (e.g., 100.x.x.x)
 ```
 
-### 3. Verify It's Working
+### 3. Verify it's working
 
 ```bash
 # Check your public IP (should show your home IP)
@@ -83,9 +83,9 @@ nslookup google.com
 ip route show table all | grep tailscale
 ```
 
-## Security Best Practices
+## Security best practices
 
-### 1. Use Tailscale ACLs (Access Control Lists)
+### 1. Use Tailscale ACLs (access control lists)
 
 Restrict which devices can use your exit node. In the Tailscale admin console, go to Access Controls and add:
 
@@ -109,7 +109,7 @@ Restrict which devices can use your exit node. In the Tailscale admin console, g
 
 This ensures only your webserver can use the home server as an exit node.
 
-### 2. Harden the Home Exit Node
+### 2. Harden the home exit node
 
 ```bash
 # Only accept traffic on the Tailscale interface
@@ -132,7 +132,7 @@ sudo apt install iptables-persistent
 sudo netfilter-persistent save
 ```
 
-### 3. Don't Advertise Subnet Routes (Unless Needed)
+### 3. Don't advertise subnet routes (unless needed)
 
 Only advertise as an exit node. Do not expose your home LAN unless you specifically need it:
 
@@ -144,7 +144,7 @@ sudo tailscale up --advertise-exit-node
 sudo tailscale up --advertise-exit-node --advertise-routes=192.168.1.0/24
 ```
 
-### 4. Enable Two-Factor Authentication
+### 4. Enable two-factor authentication
 
 On your Tailscale account:
 1. Go to https://login.tailscale.com/admin/settings/keys
@@ -152,7 +152,7 @@ On your Tailscale account:
 3. Enable device authorization (require manual approval for new devices)
 4. Set key expiry (e.g., 180 days)
 
-### 5. Monitor Traffic
+### 5. Monitor traffic
 
 On the home server, monitor unusual activity:
 
@@ -167,20 +167,20 @@ sudo iftop -i tailscale0
 sudo journalctl -u tailscale -f
 ```
 
-### 6. Separate Network Segment (Advanced)
+### 6. Separate network segment (advanced)
 
 For maximum security, run your exit node on a separate VLAN or in a DMZ, isolated from your personal devices.
 
-## What Attackers Cannot Do
+## What attackers cannot do
 
 Your home exit node is not a public VPN. Here's what's impossible:
 
--  Scan your home IP for open VPN ports (there are none)
--  Guess credentials or brute force access
--  Use your IP as a proxy without authentication
--  Discover it via Shodan, Nmap, or other scanning tools
--  DDoS through your exit node
--  Access it from outside your Tailscale network
+- Scan your home IP for open VPN ports (there are none)
+- Guess credentials or brute force access
+- Use your IP as a proxy without authentication
+- Discover it via Shodan, Nmap, or other scanning tools
+- DDoS through your exit node
+- Access it from outside your Tailscale network
 
 ### Why?
 
@@ -203,7 +203,7 @@ Your exit node could only be abused if:
 
 All of these are administrative attacks, not network-level exploits.
 
-## Advanced: Split Tunneling
+## Advanced: split tunneling
 
 If you want only specific traffic to use the exit node (not everything), you can configure split tunneling:
 
@@ -225,7 +225,7 @@ sudo ip netns exec vpn apt update
 
 Note: This is complex and may break Tailscale's automatic configuration. The simple global exit node approach is recommended for most use cases.
 
-## Disabling the Exit Node
+## Disabling the exit node
 
 ### On the webserver (stop using the exit node):
 
@@ -283,7 +283,7 @@ iperf3 -s  # on home server
 iperf3 -c $(tailscale ip home-server)  # on webserver
 ```
 
-## Comparison to Commercial VPNs
+## Comparison to commercial VPNs
 
 Your home exit node is more secure than commercial VPN services because:
 
