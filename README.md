@@ -8,7 +8,7 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 
 - Traffic encryption beyond the server: Even if someone is monitoring the network at your data center, they only see encrypted Tailscale traffic. The actual destinations and content of your requests are hidden.
 
-- Custom DNS filtering: Route traffic through a home network with advanced DNS blocklists (e.g., Pi-hole, AdGuard Home, or NextDNS at the router level). This prevents your server from connecting to known malware domains, botnet C&C servers, or newly registered domains often used in attacks.
+- Custom DNS filtering: Route traffic through a home network with advanced DNS blocklists (e.g., Pi-hole, AdGuard Home, or NextDNS at the router level). This prevents your server from connecting to known malware domains, botnet C&C servers, or newly registered domains often used in attacks. If a connection is made to a (botnet) C&C server, it will give the wrong IP to them. Rending any attack useless at the ISP level.
 
 - Centralized monitoring: By routing through your home network, you gain visibility into your server's outbound connections. You can detect unusual patterns and quickly block suspicious traffic if your server is compromised.
 
