@@ -4,7 +4,7 @@ set -euo pipefail
 # NOTE: RUN THIS ON THE PUBLIC WEBSERVER, NOT HOME/VPS EXIT NODE
 # Move the scrip to /root/ or /usr/local/bin/
 # Make it executable: chmod +x ./create-routing.sh
-# Run: sudo ./undo-routing.sh
+# Run: sudo ./create-routing.sh
 
 # Script assumes: tailscaled.service, but could be: tailscale.service in some cases (without the d). Manually edit this script to change!
 
@@ -14,8 +14,8 @@ read -p "Continue? (yes/no): " confirm
 [[ "$confirm" != "yes" ]] && { echo "Aborted."; exit 1; }
 
 # Update first
-sudo apt update
-sudo apt install curl
+apt-get update
+apt-get install curl
 
 ### 1. Snapshot existing firewall (UFW still active)
 echo "[1/10] Creating firewall snapshots..."
