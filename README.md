@@ -37,7 +37,7 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 
 - Public IP protection: Your public server's IP is never exposed when downloading packages or making external requests. This reduces your attack surface, reduces MITM attacks, ISP downtimes, and makes it harder for malicious actors to profile your server's behavior.
 
-- Traffic encryption beyond the server: Even if someone is monitoring the network at the data center, places wiretaps, sniff network traffic, they only see encrypted Tailscale traffic. The actual destinations and content of your requests are hidden.
+- Traffic encryption beyond the server: Even if someone is monitoring the network at the data center, places wiretaps (rare), sniff network traffic (even rarer, but a risk), they only see encrypted Tailscale traffic. The actual destinations and content of your requests are hidden.
 
 - Custom DNS filtering: Route traffic through a home network with advanced DNS blocklists (e.g., Pi-hole, AdGuard Home, or NextDNS at the router level). This prevents your server from connecting to known malware domains, botnet C&C servers, or newly registered domains often used in attacks.
   
