@@ -103,9 +103,13 @@ Then do this:
 
 `systemctl restart tailscaled`
 
-`sudo tailscale up`
-
 `sudo systemctl enable tailscale-routing.service`
+
+`sudo tailscale up --accept-routes=true --advertise-exit-node=false`
+
+If not working:
+
+`sudo tailscale up --reset`
 
 To survive reboots. Remember to replace the IP with the VPS exit node (not your public webserver IP)
 
