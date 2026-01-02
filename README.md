@@ -83,13 +83,16 @@ Important: After running `--advertise-exit-node`, you must approve this in the T
 3. Click the three dots menu
 4. Enable "Use as exit node"
 
-### 2. Configure the public webserver
+### 2. Configure the PUBLIC webserver
 
 Configure the public webserver (with split tunneling)
 
+> Move `undo-routing.sh` to the server. This is used to undo all routing tables for tailscale, in case of emergency or error.
+
 Edit `create-routing.sh`, or leave as is. This is where we configure selective routing. We'll route ports 80, 443, 22, and 53 through Tailscale, but keep email ports (25, 465, 587, 993, 995) direct.
 
-> Be sure to set a backup IP address for SSH access: `SAFE_SSH_IP="your.backup.ssh.ip"`
+> Be sure to set a backup IP address for SSH access: `SAFE_SSH_IP="your.backup.ssh.ip"` REQUIRED!
+> This could also be the public server IP address.
 > By default, the script also adds your curent SSH client IP, to prevent lockouts.
 
 NOTE: Run this on the PUBLIC server, NOT the exit node
@@ -99,8 +102,6 @@ NOTE: Run this on the PUBLIC server, NOT the exit node
 
 During installation of tailscale, you are being shown a URI. Use: `Ctrl+Shift+C` to open that URI in your browser, then you need to accept the device in the tailscale admin.
 If it fails, run the script for a second time. It will usually run and fix things properly.
-
-> Now also move `undo-routing.sh` to the same folder. This is used to undo all routing tables for tailscale, in case of emergency or error.
 
 Then do this:
 
