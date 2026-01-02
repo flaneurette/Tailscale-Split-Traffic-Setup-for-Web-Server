@@ -18,4 +18,6 @@ sudo iptables -t mangle -D OUTPUT -p tcp --dport 22  -j MARK --set-mark 200 2>/d
 sudo iptables -t mangle -D OUTPUT -p tcp --dport 53  -j MARK --set-mark 200 2>/dev/null || true
 sudo iptables -t mangle -D OUTPUT -p udp --dport 53  -j MARK --set-mark 200 2>/dev/null || true
 
+sudo netfilter-persistent save
+
 echo "Done. Routing restored to normal."
