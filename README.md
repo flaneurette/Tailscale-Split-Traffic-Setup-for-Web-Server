@@ -117,7 +117,7 @@ If not working:
 
 `sudo tailscale up --reset`
 
-`undo-routing.sh`
+`sudo ./undo-routing.sh`
 
 And try again. Remember, a small error doesn't mean it didn't work. Simply check if the connections are routed:
 
