@@ -103,7 +103,7 @@ Then do this:
 
 `sudo tailscale up --exit-node=<IP.EXIT.NODE> -accept-routes=false --advertise-exit-node=false`
 
-To survive reboots. Rememeber to replace the IP with the VPS exit node (not your public webserver IP)
+To survive reboots. Remember to replace the IP with the VPS exit node (not your public webserver IP)
 
 
 ## How the split tunneling works
