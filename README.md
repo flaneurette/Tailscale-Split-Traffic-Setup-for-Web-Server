@@ -115,7 +115,8 @@ If it fails, run the script for a second time. It will usually run and fix thing
 
 `tailscale up --accept-routes=false --advertise-exit-node=false --exit-node-allow-lan-access --exit-node=<EXIT.NODE.IP.HERE>`
 
-To survive reboots. Remember to replace the EXIT NODE IP with the VPS exit node (not your public webserver IP)
+- Remember to replace the EXIT NODE IP with the VPS exit node (not your public webserver IP)
+- The exit node IP can be found with: `tailscale status` and then look for the exit node, that IP you must use.
 
 If not working:
 
