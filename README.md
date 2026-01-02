@@ -47,6 +47,8 @@ One powerful feature of Tailscale is the exit node function. If you have a publi
 
 - Reduce "phone-home" calls: If your server or any installed software were compromised, DNS filtering and traffic monitoring can help block or detect unauthorized communication attempts.
 
+- Lessen attack surface: If software is rooted, changed, compromised or hijacked at installations or updates, your IP remains a mystery as to whom requested updates. If that software makes outbound requests, your IP is also not visible, but the decoy is presented to the attacker. Rendering such attack completely useless.
+
 ## How Tailscale exit nodes work
 
 When you configure a device as an exit node:
