@@ -34,6 +34,9 @@ Without this, SSH may connect but behave oddly.
 
 ## 3. (Optional but recommended) Drop SSH elsewhere
 
+Only if: ALLOW -> DROP. 
+Not if: DROP -> ALLOW.
+
 If you want SSH **only via Tailscale**, make sure you do **not** have a broad SSH allow rule earlier, and then explicitly drop it:
 
 ```bash
@@ -44,6 +47,8 @@ Order (sometimes, depending on iptables layout) matters:
 
 * `ACCEPT tailscale0 :22`
 * then `DROP :22`
+
+**Only do this if your current tables are dropping AFTER, instead of BEFORE (which should be!)**
 
 ---
 
