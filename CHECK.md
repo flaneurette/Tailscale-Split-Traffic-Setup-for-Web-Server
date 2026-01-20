@@ -60,7 +60,7 @@ Order (sometimes, depending on iptables layout) matters:
 * `ACCEPT tailscale0 :22`
 * then `DROP :22`
 
-**Only do this if your current tables are dropping AFTER, instead of BEFORE (which should be!)**
+**Only do this if your current tables are dropping AFTER, instead of BEFORE**
 
 ---
 
