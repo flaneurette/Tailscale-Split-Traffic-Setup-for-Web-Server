@@ -38,7 +38,7 @@ Only if: ALLOW -> DROP.
 
 Not if: DROP -> ALLOW.
 
-Check first with: `iptables -L -n` (look at first ro to determine ORDER)
+Check first with: `iptables -L -n` (look at first row to determine ORDER)
 
 If you want SSH **only via Tailscale**, make sure you do **not** have a broad SSH allow rule earlier, and then explicitly drop it:
 
