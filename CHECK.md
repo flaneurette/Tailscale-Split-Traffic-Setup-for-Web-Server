@@ -6,6 +6,7 @@ Quick oneliners if something fails or is missing.
 
 ```bash
 iptables -A INPUT -i tailscale0 -p tcp --dport 22 -j ACCEPT
+tailscale up --advertise-exit-node
 ```
 
 That’s usually enough.
@@ -23,6 +24,7 @@ This rule says:
 ```bash
 iptables -A INPUT -i tailscale0 -p tcp --dport 80 -j ACCEPT
 iptables -A INPUT -i tailscale0 -p tcp --dport 443 -j ACCEPT
+tailscale up --advertise-exit-node
 ```
 
 ---
