@@ -18,6 +18,13 @@ This rule says:
 * destination port 22 (SSH)
 * accept them
 
+## 1.1 Allow 80/443 from Tailscale interface
+
+```bash
+iptables -A INPUT -i tailscale0 -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -i tailscale0 -p tcp --dport 443 -j ACCEPT
+```
+
 ---
 
 ## 2. Make sure ESTABLISHED traffic is allowed (important)
