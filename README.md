@@ -91,6 +91,8 @@ Important: After running `--advertise-exit-node`, you must approve this in the T
 
 ### 2. Configure the PUBLIC webserver
 
+> TIP: Allow SSH access through tailscale:  iptables -A INPUT -i tailscale0 -p tcp --dport 22 -j ACCEPT
+
 Configure the public webserver (with split tunneling)
 
 > Move `undo-routing.sh` to the server. This is used to undo all routing tables for tailscale, in case of emergency or error.
