@@ -35,7 +35,10 @@ Without this, SSH may connect but behave oddly.
 ## 3. (Optional but recommended) Drop SSH elsewhere
 
 Only if: ALLOW -> DROP. 
+
 Not if: DROP -> ALLOW.
+
+Check first with: `iptables -L -n` (look at first ro to determine ORDER)
 
 If you want SSH **only via Tailscale**, make sure you do **not** have a broad SSH allow rule earlier, and then explicitly drop it:
 
