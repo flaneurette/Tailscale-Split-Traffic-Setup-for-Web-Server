@@ -1,6 +1,6 @@
 # Server Hostname Privacy
 
-Sometimes, tailscale might edit your Postfix configuration to add a tail address as hostname. Such as: `tailv12345.ts.net`. This is a privacy risk, can lead to exposure of the tailscale tail address, which we want to avoid to gain maxmimum privacy.
+Sometimes, tailscale might edit your Postfix configuration to add a tail address as hostname. Such as: `tailv12345.ts.net`. This is a privacy risk, can lead to exposure of the tailscale tail address, which we want to avoid to gain maximum privacy.
 
 Edit:
 
