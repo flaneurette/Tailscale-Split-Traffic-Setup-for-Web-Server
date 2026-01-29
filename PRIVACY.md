@@ -22,6 +22,7 @@ You should now see something like:
 
 `220 myserver ESMTP Postfix`
 
+Also check: `hostname` or `hostname -f` to be sure nothing leaks.
 
 ### Extra precautions
 
