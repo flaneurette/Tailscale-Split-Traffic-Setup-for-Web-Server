@@ -21,3 +21,20 @@ Then:
 You should now see something like:
 
 `220 myserver ESMTP Postfix`
+
+
+### Extra precautions
+
+If you want maximum privacy:
+
+1. Bind Postfix to only the public IP:
+
+`inet_interfaces = 127.0.0.1, <your-public-ip>`
+
+This prevents Tailscale's internal hostname from leaking if Tailscale changes it again.
+
+2. Explicitly set `smtpd_banner` in `main.cf`:
+
+`smtpd_banner = $myhostname ESMTP`
+
+
