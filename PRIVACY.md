@@ -1,6 +1,6 @@
 # Privacy
 
-Sometimes, tailscale might edit your Postfix configuration to add a tail address as hostname. This is a privacy risk, can lead to exposure of the tailscale tail address. It is something to avoid.
+Sometimes, tailscale might edit your Postfix configuration to add a tail address as hostname. Such as: `tail-12345.net`. This is a privacy risk, can lead to exposure of the tailscale tail address, which we want to avoid to gain maxmimum privacy.
 
 Edit:
 
@@ -37,4 +37,14 @@ This prevents Tailscale's internal hostname from leaking if Tailscale changes it
 
 `smtpd_banner = $myhostname ESMTP`
 
+### Risks
 
+If the tailscale  address is exposed, it could be used in finegrained attacks such as:
+
+- Spammer relays
+
+- Social engineering tailscale/admin
+
+- Spoofing
+
+- General intel.
