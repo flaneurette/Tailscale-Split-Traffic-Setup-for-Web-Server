@@ -1,6 +1,6 @@
 # Server Hostname Privacy
 
-Sometimes, tailscale might edit your Postfix configuration to add a tail address as hostname. Such as: `tail-12345.net`. This is a privacy risk, can lead to exposure of the tailscale tail address, which we want to avoid to gain maxmimum privacy.
+Sometimes, tailscale might edit your Postfix configuration to add a tail address as hostname. Such as: `tailv12345.ts.net`. This is a privacy risk, can lead to exposure of the tailscale tail address, which we want to avoid to gain maxmimum privacy.
 
 Edit:
 
@@ -58,7 +58,7 @@ If the tailscale address is exposed, it could be used in finegrained attacks suc
 
 ### Advanced hostname fix.
 
-It is wise to not to expose a bucket id, or a server id in the hostname, as attackers could use this to social engineer your ISP with that specific bucket or server ID address.
+It is wise to not to expose a **bucket id**, or a **server id** in the hostname, as attackers could use this to social engineer your ISP with that specific bucket or server ID address.
 
 Check your current hostname
 
@@ -68,11 +68,13 @@ hostname -f
 hostnamectl status
 ```
 
-You could see something like:
+You could see something like this which could expose a unique ID:
 
 ```
 superserver-12345
 ```
+
+That info can be used to social engineer your host/ISP, because a unique ID is now known.
 
 ---
 
