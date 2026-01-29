@@ -1,10 +1,10 @@
 # Privacy
 
-Sometimes, tailscale might edit your Postfix configuration to add a tail address as hostname. This is a privacy risk, can lead to exposure of the tailscle tail address. It is something to avoid.
+Sometimes, tailscale might edit your Postfix configuration to add a tail address as hostname. This is a privacy risk, can lead to exposure of the tailscale tail address. It is something to avoid.
 
 Edit:
 
-sudo nano /etc/postfix/main.cf
+`sudo nano /etc/postfix/main.cf`
 
 Change the hostname back to what you want it to show:
 
