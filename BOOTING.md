@@ -18,6 +18,8 @@ This writes your current rules to `/etc/iptables/rules.v4` and `/etc/iptables/ru
 
 ## The restore script
 
+Example for `tailscale`. Replace your `service` if you want to check another one.
+
 `nano /usr/local/sbin/iptables-restore-onboot.sh`
 
 Paste:
