@@ -16,7 +16,7 @@ From then on, manage the tailscale firewall rules yourself.
 
 # Persistent firewall
 
-Some services, like Tailscale and fail2ban, can flush or overwrite iptables rules on startup. On this system, Tailscale clears iptables during its initialization before it reads its own `nf=off` preference — there is no way to prevent this. The solution is a systemd service that restores your rules *after* Tailscale has started.
+Some services, like Tailscale and fail2ban, can flush or overwrite iptables rules on startup. On this system, Tailscale clears iptables during its initialization before it reads its own `nf=off` preference - there is no way to prevent this. The solution is a systemd service that restores your rules *after* Tailscale has started.
 
 The boot order is: `netfilter-persistent` restores rules -> `tailscaled` starts and flushes them -> `iptables-restore-onboot` restores them again.
 
