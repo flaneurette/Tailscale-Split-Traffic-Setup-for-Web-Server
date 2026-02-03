@@ -225,3 +225,7 @@ Then add:
 `*/5 * * * * /usr/local/sbin/check-iptables.sh`
 
 ---
+
+Additional useful IP reassignment script:
+
+https://github.com/flaneurette/Server-Scripts/blob/main/Scripts/reassign-ip.sh
