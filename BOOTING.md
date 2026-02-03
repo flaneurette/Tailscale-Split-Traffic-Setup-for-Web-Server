@@ -77,5 +77,48 @@ sudo systemctl enable iptables-restore-onboot.service
 sudo systemctl start iptables-restore-onboot.service
 ```
 
+# Self-healing crontab
 
+Run this first:
+
+```
+sudo iptables -A INPUT -m comment --comment "DUMMY-CHECK" -j DROP
+```
+
+The above adds a “dummy rule” as a canary to check whether your iptables have been wiped or not.
+
+```
+sudo iptables-save > /etc/iptables/rules.v4
+sudo ip6tables-save > /etc/iptables/rules.v6
+```
+
+Then:
+
+`nano /usr/local/sbin/check-iptables.sh`
+
+Paste:
+
+```
+#!/bin/bash
+# Check if the dummy rule exists
+if ! iptables -C INPUT -m comment --comment "DUMMY-CHECK" -j DROP &>/dev/null; then
+    echo "$(date): Dummy rule missing, restoring iptables..."
+    iptables-restore < /etc/iptables/rules.v4
+    ip6tables-restore < /etc/iptables/rules.v6
+fi
+```
+
+Then:
+
+`sudo chmod +x /usr/local/sbin/check-iptables.sh`
+
+Then:
+
+`sudo crontab -e`
+
+Then:
+
+`*/5 * * * * /usr/local/sbin/check-iptables.sh`
+
+---
 
