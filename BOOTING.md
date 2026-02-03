@@ -45,7 +45,10 @@ A lot of things can and will go wrong. So we designed the following `firewall in
 ### Proceed with implementation
 
 ```
-# Disable it
+
+sudo apt install mailutils
+
+# Disable nftables
 sudo systemctl stop nftables
 sudo systemctl disable nftables
 
@@ -255,7 +258,23 @@ Then add:
 
 ---
 
-Test it:
+### Quick Verification
+
+After setup, verify each layer:
+
+### Check saved rules exist
+ls -lh /etc/iptables/rules.v4
+
+### Check systemd service
+sudo systemctl status iptables-restore-onboot.service
+
+### Check cron is scheduled
+sudo crontab -l | grep check-iptables
+
+### Force a test restore
+sudo /usr/local/sbin/check-iptables.sh
+
+Test it on boot:
 
 ```
 sudo reboot
