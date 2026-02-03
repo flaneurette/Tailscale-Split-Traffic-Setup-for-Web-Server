@@ -70,6 +70,8 @@ WantedBy=multi-user.target
 
 The `After=network.target` is what guarantees this runs last.
 
+Drawback is, it might wait for 30 seconds for full reboot.
+
 ## Enable it
 
 ```bash
