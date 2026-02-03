@@ -11,7 +11,7 @@ The solution is a custom systemd program that runs after boot, and makes sure th
 
 `iptables-restore-onboot` restores them again.
 
-However, sometimes `netfilter-persistent` doesn't always work properly especially with `nftables` (not recommended).
+However, sometimes `netfilter-persistent save` doesn't always work properly especially with `nftables` (not recommended), and might flush your tables!
 
 ```
 # Disable it
