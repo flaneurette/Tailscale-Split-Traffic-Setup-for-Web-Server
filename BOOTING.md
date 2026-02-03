@@ -30,6 +30,10 @@ sudo iptables-restore < /etc/iptables/rules.v4
 
 iptables --version
 # Should say "legacy" now
+
+# Disables netfilter-persistent, which can flush your iptables!
+sudo systemctl disable netfilter-persistent
+sudo systemctl mask netfilter-persistent
 ```
 
 And start using regular `iptables` again.
