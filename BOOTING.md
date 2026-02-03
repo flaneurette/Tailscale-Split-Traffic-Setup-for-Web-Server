@@ -6,7 +6,7 @@ In this document we are going to build a triple-layered defense:
 - a systemd service (post-service restore)
 - a cron canary (continuous monitoring every 5 min)
 
-In this way, we do not have to rely on packages such as `UFW`, `netfilter-persistent` nor `nftables`. Our method is rather safe, because there are few surprises (no strange flushing of tables). Even if you are locked out, a `crontab` will restore the tables properly.
+In this way, we do not have to rely on packages such as `UFW`, `netfilter-persistent` nor `nftables`. Our method is rather safe, because there are few surprises (no mysterious flushing of tables). Even if you are locked out, a `crontab` will restore the tables properly.
 
 ### Why?
 
