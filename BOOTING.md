@@ -34,6 +34,7 @@ iptables --version
 # Disables netfilter-persistent, which can flush your iptables!
 sudo systemctl disable netfilter-persistent
 sudo systemctl mask netfilter-persistent
+sudo apt remove netfilter-persistent iptables-persistent
 ```
 
 And start using regular `iptables` again.
