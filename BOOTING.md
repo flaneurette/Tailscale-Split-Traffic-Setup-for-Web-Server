@@ -10,14 +10,22 @@ In this way, we do not have to rely on packages such as `UFW`, `netfilter-persis
 
 ### Why?
 
-Some services, like Tailscale and fail2ban, can flush or overwrite iptables rules on startup or reinstallment which leads to empy iptables. Quite risky! On our system, 
+Some services, like netfilter, tailscale, fail2ban and perhaps others, can flush or overwrite iptables rules on startup, reinstallment or reconfiguration which leads to empy iptables. Quite risky! On our system, 
 Tailscale clears iptables during its initialization before it reads its own `nf=off` preference - there is no way to prevent this.
 
 The solution is a custom systemd program that runs after boot, and makes sure that the iptables rules are restored, regardless of the programs running before it.
 
+- No blind trust in init systems
+
+- No faith-based persistence
+
+- Recovery > prevention
+
+- No mysterious flushes
+
 ```
-boot
- ├─ netfilter-persistent (ignored, might flush if nftables > iptables)
+new boot order
+ ├─ netfilter-persistent (ignored, as it might flush if nftables > iptables)
  ├─ tailscaled (flushes)
  ├─ iptables-restore-onboot.service (restores)
  └─ cron canary (keeps healing)
