@@ -113,7 +113,8 @@ ip6tables-restore < /etc/iptables/rules.v6
 ```ini
 [Unit]
 Description=Restore iptables rules after boot
-After=network.target
+After=network-online.target tailscaled.service
+Wants=network-online.target
 
 [Service]
 Type=oneshot
