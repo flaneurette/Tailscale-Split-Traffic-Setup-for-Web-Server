@@ -209,6 +209,10 @@ fi
 # Check if fail2ban is running and restart it to recreate its chains
 if systemctl is-active --quiet fail2ban; then
    systemctl restart fail2ban
+   if ! iptables -C INPUT -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP &>/dev/null; then
+       sudo iptables -I INPUT 2 -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP
+       sudo iptables-save > /etc/iptables/rules.v4
+   fi
 fi
 ```
 
