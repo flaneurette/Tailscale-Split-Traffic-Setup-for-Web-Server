@@ -77,7 +77,7 @@ Drawback is, it might wait for 30-60 seconds for full reboot. You might have to 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable iptables-restore-onboot.service
-sudo systemctl start iptables-restore-onboot.service
+sudo systemctl start iptables-restore-onboot.service (might be slow!)
 ```
 
 # Self-healing crontab
