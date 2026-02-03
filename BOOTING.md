@@ -4,6 +4,8 @@ Sometimes, and most likely, tailscale can flush your iptables. Which is annoying
 
 After setting up tailscale on the `exit node`, run this:
 
+`sudo systemctl disable tailscaled`
+
 `tailscale up --netfilter-mode=off --advertise-exit-node`
 
 On the `public server`, run this:
@@ -13,6 +15,8 @@ On the `public server`, run this:
 From then on, manage the tailscale firewall rules yourself.
 
 This will prevent tailscale from resetting your firewall after a boot.
+
+You must run this after each reboot!
 
 
 

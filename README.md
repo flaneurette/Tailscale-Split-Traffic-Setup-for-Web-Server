@@ -71,10 +71,10 @@ Save iptables on both machines, as tailscale can sometimes flush your iptables. 
 
 ```
 sudo iptables-save > /etc/iptables/rules.v4
-sudo iptables-save > /etc/iptables/rules.v6
+sudo ip6tables-save > /etc/iptables/rules.v6
 
 sudo iptables-save > /etc/iptables/rules.v4.bak
-sudo iptables-save > /etc/iptables/rules.v6.bak
+sudo ip6tables-save > /etc/iptables/rules.v6.bak
 ```
 
 If something goes wrong:
