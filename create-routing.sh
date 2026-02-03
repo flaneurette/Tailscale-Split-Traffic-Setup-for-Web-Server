@@ -160,8 +160,7 @@ CURRENT_STEP="5/11: Installing iptables-persistent"
 echo "[$CURRENT_STEP]"
 export DEBIAN_FRONTEND=noninteractive
 wait_for_apt
-apt-get install -y netfilter-persistent iptables-persistent
-echo "iptables-persistent installed"
+sudo iptables-save > /etc/iptables/rules.v4
 
 # -----------------------------
 # 6. Restore previous firewall rules
@@ -429,7 +428,7 @@ echo "Policy routing configured successfully"
 # -----------------------------
 CURRENT_STEP="10/11: Saving iptables rules"
 echo "[$CURRENT_STEP]"
-netfilter-persistent save
+sudo iptables-save > /etc/iptables/rules.v4
 echo "iptables rules persisted"
 
 # -----------------------------

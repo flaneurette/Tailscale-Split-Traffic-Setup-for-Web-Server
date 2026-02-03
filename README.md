@@ -234,8 +234,9 @@ sudo iptables -A INPUT -s 192.168.1.0/24 -p tcp --dport 22 -j ACCEPT
 sudo iptables -A INPUT -j DROP
 
 # Save rules
-sudo apt install iptables-persistent
-sudo netfilter-persistent save
+# sudo apt install iptables-persistent
+
+iptables-save > /etc/iptables/rules.v4
 ```
 
 ### 3. Don't advertise subnet routes (unless needed)

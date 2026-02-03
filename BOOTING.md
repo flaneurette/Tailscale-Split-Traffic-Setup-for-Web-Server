@@ -48,7 +48,7 @@ Use It:
 sudo firewall
 
 # NOT this (broken):
-# sudo netfilter-persistent save
+
 ```
 
 ## Saving rules
