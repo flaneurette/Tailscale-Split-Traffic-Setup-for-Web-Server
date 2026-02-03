@@ -14,10 +14,6 @@ On the `public server`, run this:
 
 From then on, manage the tailscale firewall rules yourself.
 
-This will prevent tailscale from resetting your firewall after a boot.
-
-You must run this after each reboot!
-
 # Persistent firewall
 
 Some services, like Tailscale and fail2ban, can flush or overwrite iptables rules on startup. On this system, Tailscale clears iptables during its initialization before it reads its own `nf=off` preference — there is no way to prevent this. The solution is a systemd service that restores your rules *after* Tailscale has started.
