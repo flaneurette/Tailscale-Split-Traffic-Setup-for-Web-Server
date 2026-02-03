@@ -34,7 +34,15 @@ new boot order
 
 However, sometimes `netfilter-persistent save` doesn't always work properly especially with `nftables` (not recommended), and might flush your tables!  (because mixed nft/legacy setups can silently flush or desync rulesets and often it is not clear which wrapper runs on netfilter!)
 
-### Proceed
+We designed this like how `HA systems` think:
+
+- assume mutation
+
+- detect drift
+
+- reconcile continuously
+
+### Proceed with inplementation
 
 ```
 # Disable it
