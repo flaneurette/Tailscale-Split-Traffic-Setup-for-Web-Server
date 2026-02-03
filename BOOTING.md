@@ -42,7 +42,7 @@ A lot of things can and will go wrong. So we designed the following `firewall in
 
 - reconcile continuously
 
-### Proceed with inplementation
+### Proceed with implementation
 
 ```
 # Disable it
