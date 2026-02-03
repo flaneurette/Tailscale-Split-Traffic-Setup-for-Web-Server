@@ -65,6 +65,25 @@ When you configure a device as an exit node:
 
 ## Setup guide
 
+### First
+
+Save iptables, as tailscale can sometimes flush your iptables. See; `BOOTING.md` to survive reboots.
+
+```
+sudo iptables-save > /etc/iptables/rules.v4
+sudo iptables-save > /etc/iptables/rules.v6
+
+sudo iptables-save > /etc/iptables/rules.v4.bak
+sudo iptables-save > /etc/iptables/rules.v6.bak
+```
+
+If something goes wrong:
+
+```
+sudo iptables-restore < /etc/iptables/rules.v4.bak
+sudo ip6tables-restore < /etc/iptables/rules.v6.bak
+```
+
 ### 1. Set up the home server (exit node)
 
 > TIP: Allow SSH access through tailscale:  iptables -A INPUT -i tailscale0 -p tcp --dport 22 -j ACCEPT
