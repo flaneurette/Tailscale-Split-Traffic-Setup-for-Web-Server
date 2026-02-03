@@ -66,8 +66,9 @@ The `After=network.target` is what guarantees this runs last.
 ## Enable it
 
 ```bash
-sudo systemctl enable iptables-restore-onboot
 sudo systemctl daemon-reload
+sudo systemctl enable iptables-restore-onboot.service
+sudo systemctl start iptables-restore-onboot.service
 ```
 
 
