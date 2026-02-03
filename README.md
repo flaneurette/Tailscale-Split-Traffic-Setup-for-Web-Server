@@ -67,7 +67,7 @@ When you configure a device as an exit node:
 
 ### First
 
-Save iptables, as tailscale can sometimes flush your iptables. See; `BOOTING.md` to survive reboots.
+Save iptables on both machines, as tailscale can sometimes flush your iptables. See; `BOOTING.md` to survive reboots.
 
 ```
 sudo iptables-save > /etc/iptables/rules.v4
