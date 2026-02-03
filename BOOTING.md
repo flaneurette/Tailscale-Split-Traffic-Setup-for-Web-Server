@@ -83,7 +83,6 @@ Run this first:
 
 ```
 sudo iptables -I INPUT 2 -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP
-sudo ip6tables -I INPUT 2 -s 2001:db8::99 -m comment --comment "CANARY-ADMIN" -j DROP
 ```
 
 The above adds a “dummy rule” as a canary to check whether your iptables have been wiped or not.
@@ -113,11 +112,6 @@ restore_needed=0
 # Check for top canary (catches early flush)
 if ! iptables -C INPUT -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP &>/dev/null; then
     echo "$(date): IPv4 top canary missing" >> "$LOG"
-    restore_needed=1
-fi
-
-if ! ip6tables -C INPUT -s 2001:db8::99 -m comment --comment "CANARY-ADMIN" -j DROP &>/dev/null; then
-    echo "$(date): IPv6 top canary missing" >> "$LOG"
     restore_needed=1
 fi
 
