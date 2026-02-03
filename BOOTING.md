@@ -188,6 +188,9 @@ Paste:
 # Check if the dummy rule exists
 
 LOG=/var/log/iptables-check.log
+# Logs errors to your email
+EMAIL="hello@example.com"
+FROM="hello@example.com"  # Use a valid sender address
 
 restore_needed=0
 
@@ -210,8 +213,8 @@ fi
 if systemctl is-active --quiet fail2ban; then
    systemctl restart fail2ban
    if ! iptables -C INPUT -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP &>/dev/null; then
-       sudo iptables -I INPUT 2 -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP
-       sudo iptables-save > /etc/iptables/rules.v4
+	   echo "$(date): Fail2ban flushed the iptables?!" >> "$LOG"
+	   mail -s "Fail2ban flushed the iptables?!" -r "$FROM" "$EMAIL"
    fi
 fi
 ```
