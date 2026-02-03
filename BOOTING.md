@@ -2,7 +2,7 @@
 
 In this document we are going to build a triple-layered defense:
 
-- a peristent firewall(initial boot)
+- a persistent firewall(initial boot)
 - a systemd service (post-service restore)
 - a cron canary (continuous monitoring every 5 min)
 
