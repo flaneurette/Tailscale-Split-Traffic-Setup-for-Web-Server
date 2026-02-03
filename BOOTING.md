@@ -117,7 +117,7 @@ Then:
 
 `sudo crontab -e`
 
-Then:
+Then add:
 
 `*/5 * * * * /usr/local/sbin/check-iptables.sh`
 
