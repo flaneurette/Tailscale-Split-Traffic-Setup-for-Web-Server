@@ -4,7 +4,13 @@ Some services, like Tailscale and fail2ban, can flush or overwrite iptables rule
 
 The solution is a custom systemd program that runs after boot, and makes sure that the iptables rules are restored, regardless of the programs running before it.
 
-The boot order is: `netfilter-persistent` restores rules -> `tailscaled` starts and flushes them -> `iptables-restore-onboot` restores them again.
+The boot order is: 
+
+`netfilter-persistent` restores rules -> 
+
+`tailscaled` starts and flushes them -> 
+
+`iptables-restore-onboot` restores them again.
 
 ## Saving rules
 
