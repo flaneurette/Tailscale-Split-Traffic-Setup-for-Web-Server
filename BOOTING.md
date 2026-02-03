@@ -61,7 +61,7 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/sbin/iptables-restore-onboot.sh
-TimeoutStartSec=30
+TimeoutStartSec=45
 RemainAfterExit=yes
 
 [Install]
@@ -70,7 +70,7 @@ WantedBy=multi-user.target
 
 The `After=network.target` is what guarantees this runs last.
 
-Drawback is, it might wait for 30 seconds for full reboot. You might have to tweak the TimeoutStartSec, to see whether tailscale boots fast or not.
+Drawback is, it might wait for 30-60 seconds for full reboot. You might have to tweak the TimeoutStartSec, to see whether tailscale boots fast or not.
 
 ## Enable it
 
