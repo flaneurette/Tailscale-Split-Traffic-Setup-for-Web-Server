@@ -15,13 +15,15 @@ Tailscale clears iptables during its initialization before it reads its own `nf=
 
 The solution is a custom systemd program that runs after boot, and makes sure that the iptables rules are restored, regardless of the programs running before it.
 
-`netfilter-persistent` restores rules -> 
+```
+boot
+ ├─ netfilter-persistent (ignored)
+ ├─ tailscaled (flushes)
+ ├─ iptables-restore-onboot.service (restores)
+ └─ cron canary (keeps healing)
+```
 
-`tailscaled` starts and flushes them -> 
-
-`iptables-restore-onboot` restores them again.
-
-However, sometimes `netfilter-persistent save` doesn't always work properly especially with `nftables` (not recommended), and might flush your tables!
+However, sometimes `netfilter-persistent save` doesn't always work properly especially with `nftables` (not recommended), and might flush your tables!  (because mixed nft/legacy setups can silently flush or desync rulesets and often it is not clear which wrapper runs on netfilter!)
 
 ### Proceed
 
@@ -143,7 +145,7 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 ```
 
-The `After=network.target` is what guarantees this runs last.
+The `After=network-online.target tailscaled.service` is what guarantees this runs last.
 
 Drawback is, it might wait for 30-60 seconds for full reboot. You might have to tweak the TimeoutStartSec, to see whether tailscale boots fast or not. Tailscale can be slow to boot. So 60 seconds is safe.
 
@@ -186,6 +188,9 @@ Paste:
 ```
 #!/bin/bash
 # Check if the dummy rule exists
+
+touch /var/log/iptables-check.log
+chmod 600 /var/log/iptables-check.log
 
 LOG=/var/log/iptables-check.log
 # Logs errors to your email
