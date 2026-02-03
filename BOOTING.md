@@ -173,7 +173,7 @@ A self-healing crontab is very useful, this gives an extra layer of protection. 
 
 To mitigate this we can create a crontab that runs every 5 minutes, regardless of what is going on, and heals the firewall when it detects it was flushed.
 
-Run this first:
+🐤 Run this canary rule first:
 
 ```
 sudo iptables -I INPUT 2 -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP
