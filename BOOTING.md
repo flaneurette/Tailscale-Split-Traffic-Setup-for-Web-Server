@@ -100,6 +100,11 @@ done
 # Restore regardless of whether tailscaled started or not
 iptables-restore < /etc/iptables/rules.v4
 ip6tables-restore < /etc/iptables/rules.v6
+
+# Check if fail2ban is running and restart it to recreate its chains
+if systemctl is-active --quiet fail2ban; then
+   systemctl restart fail2ban
+fi
 ```
 
 > NOTE: $(seq 1 60); = 5 minutes. Shorter: 15 instead of 60. = 90 seconds. Still, tailscale can be very slow. 5 minutes is safety.
