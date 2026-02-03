@@ -263,16 +263,16 @@ Then add:
 After setup, verify each layer:
 
 ### Check saved rules exist
-ls -lh /etc/iptables/rules.v4
+`ls -lh /etc/iptables/rules.v4`
 
 ### Check systemd service
-sudo systemctl status iptables-restore-onboot.service
+`sudo systemctl status iptables-restore-onboot.service`
 
 ### Check cron is scheduled
-sudo crontab -l | grep check-iptables
+`sudo crontab -l | grep check-iptables`
 
 ### Force a test restore
-sudo /usr/local/sbin/check-iptables.sh
+`sudo /usr/local/sbin/check-iptables.sh`
 
 Test it on boot:
 
