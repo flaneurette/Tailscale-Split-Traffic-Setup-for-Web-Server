@@ -17,7 +17,7 @@ The solution is a custom systemd program that runs after boot, and makes sure th
 
 ```
 boot
- ├─ netfilter-persistent (ignored)
+ ├─ netfilter-persistent (ignored, might flush if nftables > iptables)
  ├─ tailscaled (flushes)
  ├─ iptables-restore-onboot.service (restores)
  └─ cron canary (keeps healing)
