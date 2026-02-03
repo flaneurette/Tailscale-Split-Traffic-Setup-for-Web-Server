@@ -26,7 +26,8 @@ The solution is a custom systemd program that runs after boot, and makes sure th
 ```
 new boot order
  ├─ netfilter-persistent (ignored, as it might flush if nftables > iptables)
- ├─ tailscaled (flushes)
+ ├─ tailscaled (can flush)
+ ├─ fail2ban (can flush)
  ├─ iptables-restore-onboot.service (restores)
  └─ cron canary (keeps healing)
 ```
