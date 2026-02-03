@@ -269,6 +269,8 @@ Then check:
 iptables -L -n -v --line-numbers
 ```
 
+Run this a few times after one another, to see `systemd` or `cron` effect.
+
 ---
 
 End.
