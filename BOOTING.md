@@ -1,5 +1,15 @@
 # Persistent Linux Firewall
 
+In this document we are going to build a triple-layered defense:
+
+- a peristent firewall(initial boot)
+- a systemd service (post-service restore)
+- a cron canary (continuous monitoring every 5 min)
+
+In this way, we do not have to rely on packages such as `UFW`, `netfilter-persistent` nor `nftables`. Our method is rather safe, because there are few surprises (no strange flushing of tables). Even if you are locked out, a `crontab` will restore the tables properly.
+
+### Why?
+
 Some services, like Tailscale and fail2ban, can flush or overwrite iptables rules on startup or reinstallment which leads to empy iptables. Quite risky! On our system, 
 Tailscale clears iptables during its initialization before it reads its own `nf=off` preference - there is no way to prevent this.
 
@@ -12,6 +22,8 @@ The solution is a custom systemd program that runs after boot, and makes sure th
 `iptables-restore-onboot` restores them again.
 
 However, sometimes `netfilter-persistent save` doesn't always work properly especially with `nftables` (not recommended), and might flush your tables!
+
+### Proceed
 
 ```
 # Disable it
