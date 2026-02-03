@@ -82,6 +82,10 @@ sudo systemctl start iptables-restore-onboot.service (might be slow!)
 
 # Self-healing crontab
 
+A self-healing crontab is very useful, this gives an extra layer of protection. Although rare, systemd can fail. You might be locked out, or something else causes an issue, like kernel ordering of executing is mixed up or deferred.
+
+To mitigate this we can create a crontab that runs every 5 minutes, regardless of what is going on, and heals the firewall when it detects it was flushed.
+
 Run this first:
 
 ```
@@ -91,7 +95,6 @@ sudo iptables -I INPUT 2 -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j 
 The above adds a “dummy rule” as a canary to check whether your iptables have been wiped or not.
 
 > Note: 203.0.113.0/24 and 2001:db8::/32 are TEST-NET ranges - they're reserved and will never be routed on the internet, so they're perfect for canaries.
-
 
 ```
 sudo iptables-save > /etc/iptables/rules.v4
