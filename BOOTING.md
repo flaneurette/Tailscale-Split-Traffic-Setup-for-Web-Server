@@ -83,6 +83,7 @@ Run this first:
 
 ```
 sudo iptables -A INPUT -m comment --comment "DUMMY-CHECK" -j DROP
+sudo ip6tables -A INPUT -m comment --comment "DUMMY-CHECK" -j DROP
 ```
 
 The above adds a “dummy rule” as a canary to check whether your iptables have been wiped or not.
