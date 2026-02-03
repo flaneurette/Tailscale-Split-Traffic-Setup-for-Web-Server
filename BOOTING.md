@@ -255,6 +255,24 @@ Then add:
 
 ---
 
+Test it:
+
+```
+sudo reboot
+```
+
+Rebooting may take some time, please be patient.
+
+Then check:
+
+```
+iptables -L -n -v --line-numbers
+```
+
+---
+
+End.
+
 Additional useful IP reassignment script:
 
 https://github.com/flaneurette/Server-Scripts/blob/main/Scripts/reassign-ip.sh
