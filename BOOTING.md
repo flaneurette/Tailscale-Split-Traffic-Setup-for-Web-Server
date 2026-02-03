@@ -11,7 +11,7 @@ The solution is a custom systemd program that runs after boot, and makes sure th
 
 `iptables-restore-onboot` restores them again.
 
-However, sometimes `netfilter-persistent` doesn't always work properly especially with `nft tables` (not recommended).
+However, sometimes `netfilter-persistent` doesn't always work properly especially with nft tables (not recommended).
 
 ```
 # Flush nftables
@@ -24,9 +24,40 @@ sudo systemctl disable nftables
 
 And start using regular `iptables` again.
 
+Create:
+
+`sudo nano /usr/local/bin/firewall`
+
+Paste:
+
+```
+#!/bin/bash
+iptables-save > /etc/iptables/rules.v4
+ip6tables-save > /etc/iptables/rules.v6
+echo "Rules saved!"
+```
+
+Then:
+
+`sudo chmod +x /usr/local/bin/firewall`
+
+Use It:
+
+```
+# When you change rules, save with:
+sudo firewall
+
+# NOT this (broken):
+# sudo netfilter-persistent save
+```
+
 ## Saving rules
 
 Whenever you change your iptables rules, save them:
+
+`sudo firewall`
+
+or:
 
 ```bash
 sudo iptables-save > /etc/iptables/rules.v4
