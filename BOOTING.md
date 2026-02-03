@@ -97,6 +97,8 @@ iptables-restore < /etc/iptables/rules.v4
 ip6tables-restore < /etc/iptables/rules.v6
 ```
 
+> NOTE: $(seq 1 60); = 5 minutes. Shorter: 15 instead of 60. = 90 seconds. Still, tailscale can be very slow. 5 minutes is safety.
+
 `chmod +x /usr/local/sbin/iptables-restore-onboot.sh`
 
 ## The systemd service
@@ -111,7 +113,7 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/sbin/iptables-restore-onboot.sh
-TimeoutStartSec=45
+TimeoutStartSec=60
 RemainAfterExit=yes
 
 [Install]
