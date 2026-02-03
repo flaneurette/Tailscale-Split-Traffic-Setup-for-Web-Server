@@ -11,15 +11,25 @@ The solution is a custom systemd program that runs after boot, and makes sure th
 
 `iptables-restore-onboot` restores them again.
 
-However, sometimes `netfilter-persistent` doesn't always work properly especially with nft tables (not recommended).
+However, sometimes `netfilter-persistent` doesn't always work properly especially with `nftables` (not recommended).
 
 ```
-# Flush nftables
-sudo nft flush ruleset
-
 # Disable it
 sudo systemctl stop nftables
 sudo systemctl disable nftables
+
+# Switch to REAL iptables (not the nftables wrapper)
+sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
+sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+
+# Flush nftables completely
+sudo nft flush ruleset
+
+# Reload your iptables rules
+sudo iptables-restore < /etc/iptables/rules.v4
+
+iptables --version
+# Should say "legacy" now
 ```
 
 And start using regular `iptables` again.
