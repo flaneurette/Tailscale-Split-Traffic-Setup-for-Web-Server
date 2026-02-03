@@ -82,11 +82,14 @@ sudo systemctl start iptables-restore-onboot.service
 Run this first:
 
 ```
-sudo iptables -A INPUT -m comment --comment "DUMMY-CHECK" -j DROP
-sudo ip6tables -A INPUT -m comment --comment "DUMMY-CHECK" -j DROP
+sudo iptables -I INPUT 2 -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP
+sudo ip6tables -I INPUT 2 -s 2001:db8::99 -m comment --comment "CANARY-ADMIN" -j DROP
 ```
 
 The above adds a “dummy rule” as a canary to check whether your iptables have been wiped or not.
+
+> Note: 203.0.113.0/24 and 2001:db8::/32 are TEST-NET ranges - they're reserved and will never be routed on the internet, so they're perfect for canaries.
+
 
 ```
 sudo iptables-save > /etc/iptables/rules.v4
@@ -102,11 +105,31 @@ Paste:
 ```
 #!/bin/bash
 # Check if the dummy rule exists
-if ! iptables -C INPUT -m comment --comment "DUMMY-CHECK" -j DROP &>/dev/null; then
-    echo "$(date): Dummy rule missing, restoring iptables..."
-    iptables-restore < /etc/iptables/rules.v4
-    ip6tables-restore < /etc/iptables/rules.v6
+#!/bin/bash
+LOG=/var/log/iptables-check.log
+
+restore_needed=0
+
+# Check for top canary (catches early flush)
+if ! iptables -C INPUT -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j DROP &>/dev/null; then
+    echo "$(date): IPv4 top canary missing" >> "$LOG"
+    restore_needed=1
 fi
+
+if ! ip6tables -C INPUT -s 2001:db8::99 -m comment --comment "CANARY-ADMIN" -j DROP &>/dev/null; then
+    echo "$(date): IPv6 top canary missing" >> "$LOG"
+    restore_needed=1
+fi
+
+if [ $restore_needed -eq 1 ]; then
+    echo "$(date): Canary missing - restoring iptables..." >> "$LOG"
+    
+    [ -f /etc/iptables/rules.v4 ] && iptables-restore < /etc/iptables/rules.v4
+    [ -f /etc/iptables/rules.v6 ] && ip6tables-restore < /etc/iptables/rules.v6
+    
+    echo "$(date): Rules restored successfully" >> "$LOG"
+fi
+
 ```
 
 Then:
@@ -120,6 +143,7 @@ Then:
 Then add:
 
 `*/5 * * * * /usr/local/sbin/check-iptables.sh`
+
 
 ---
 
