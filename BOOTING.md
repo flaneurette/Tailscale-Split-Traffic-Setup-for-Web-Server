@@ -56,9 +56,6 @@ Use It:
 ```
 # When you change rules, save with:
 sudo firewall
-
-# NOT this (broken):
-
 ```
 
 ## Saving rules
