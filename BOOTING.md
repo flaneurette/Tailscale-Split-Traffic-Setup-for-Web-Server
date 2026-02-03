@@ -193,6 +193,11 @@ if [ $restore_needed -eq 1 ]; then
     
     echo "$(date): Rules restored successfully" >> "$LOG"
 fi
+
+# Check if fail2ban is running and restart it to recreate its chains
+if systemctl is-active --quiet fail2ban; then
+   systemctl restart fail2ban
+fi
 ```
 
 Then:
