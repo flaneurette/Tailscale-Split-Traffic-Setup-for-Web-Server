@@ -147,7 +147,7 @@ if systemctl is-active --quiet fail2ban; then
 fi
 ```
 
-> NOTE: $(seq 1 60); = 5 minutes. Shorter: 15 instead of 60. = 90 seconds. Still, tailscale can be very slow. 5 minutes is safety.
+> NOTE: $(seq 1 60); = 5 minutes. Shorter: 15 instead of 60. ~= 75 seconds. Still, tailscale can be very slow. 5 minutes is extra safety.
 
 `chmod +x /usr/local/sbin/iptables-restore-onboot.sh`
 
