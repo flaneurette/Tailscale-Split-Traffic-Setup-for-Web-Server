@@ -128,7 +128,7 @@ Paste:
 
 ```bash
 #!/bin/bash
-# Wait for tailscaled to start, timeout after 5 minutes
+# Wait for tailscaled to start, timeout after 75 seconds
 for i in $(seq 1 15); do
     if systemctl is-active --quiet tailscaled; then
         sleep 5  # Give it a moment to finish flushing
