@@ -81,14 +81,13 @@ Paste:
 
 ```
 #!/bin/bash
+set -e
 
-# Backup
-sudo iptables-save > /etc/iptables/rules.v4.bak.firewall
-sudo ip6tables-save > /etc/iptables/rules.v6.bak.firewall
+iptables-save > /etc/iptables/rules.v4.bak.firewall
+ip6tables-save > /etc/iptables/rules.v6.bak.firewall
 
-# Save
-sudo iptables-save > /etc/iptables/rules.v4
-sudo ip6tables-save > /etc/iptables/rules.v6
+iptables-save > /etc/iptables/rules.v4
+ip6tables-save > /etc/iptables/rules.v6
 
 echo "Saved all iptables!"
 ```
