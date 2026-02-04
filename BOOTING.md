@@ -129,7 +129,7 @@ Paste:
 ```bash
 #!/bin/bash
 # Wait for tailscaled to start, timeout after 5 minutes
-for i in $(seq 1 60); do
+for i in $(seq 1 15); do
     if systemctl is-active --quiet tailscaled; then
         sleep 5  # Give it a moment to finish flushing
         break
@@ -164,7 +164,7 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/sbin/iptables-restore-onboot.sh
-TimeoutStartSec=60
+TimeoutStartSec=120
 RemainAfterExit=yes
 
 [Install]
