@@ -81,9 +81,16 @@ Paste:
 
 ```
 #!/bin/bash
-iptables-save > /etc/iptables/rules.v4
-ip6tables-save > /etc/iptables/rules.v6
-echo "Rules saved!"
+
+# Backup
+sudo iptables-save > /etc/iptables/rules.v4.bak.firewall
+sudo ip6tables-save > /etc/iptables/rules.v6.bak.firewall
+
+# Save
+sudo iptables-save > /etc/iptables/rules.v4
+sudo ip6tables-save > /etc/iptables/rules.v6
+
+echo "Saved all iptables!"
 ```
 
 Then:
