@@ -254,17 +254,17 @@ fi
 
 # Check if the service is enabled on boot
 if systemctl is-enabled --quiet "$SERVICE"; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $SERVICE is enabled" >> "$LOG"
+    echo "$(date) - $SERVICE is enabled" >> "$LOG"
 else
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $SERVICE is NOT enabled, enabling" >> "$LOG"
+    echo "$(date) - $SERVICE is NOT enabled, enabling" >> "$LOG"
     systemctl enable "$SERVICE"
 fi
 
 # Check if the service is running
 if systemctl is-active --quiet "$SERVICE"; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $SERVICE is running" >> "$LOG"
+    echo "$(date) - $SERVICE is running" >> "$LOG"
 else
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $SERVICE is NOT running, starting it." >> "$LOG"
+    echo "$(date) - $SERVICE is NOT running, starting it." >> "$LOG"
     systemctl start "$SERVICE"
 fi
 
