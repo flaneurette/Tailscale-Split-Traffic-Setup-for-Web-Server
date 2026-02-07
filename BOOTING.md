@@ -213,15 +213,18 @@ Paste:
 
 ```
 #!/bin/bash
-# Check if the dummy rule exists
-
-touch /var/log/iptables-check.log
-chmod 600 /var/log/iptables-check.log
+# Check if the dummy rule exists + check if systemd service is running.
 
 LOG=/var/log/iptables-check.log
+touch "$LOG"
+chmod 600 "$LOG"
+
 # Logs errors to your email
 EMAIL="hello@example.com"
 FROM="hello@example.com"  # Use a valid sender address
+
+# Check systemd service. 
+SERVICE="iptables-restore-onboot.service"
 
 restore_needed=0
 
@@ -247,6 +250,22 @@ if [ $restore_needed -eq 1 ]; then
 		   mail -s "Fail2ban flushed the iptables?!" -r "$FROM" "$EMAIL"
 	   fi
 	fi
+fi
+
+# Check if the service is enabled on boot
+if systemctl is-enabled --quiet "$SERVICE"; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $SERVICE is enabled" >> "$LOG"
+else
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $SERVICE is NOT enabled, enabling" >> "$LOG"
+    systemctl enable "$SERVICE"
+fi
+
+# Check if the service is running
+if systemctl is-active --quiet "$SERVICE"; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $SERVICE is running" >> "$LOG"
+else
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $SERVICE is NOT running, starting it." >> "$LOG"
+    systemctl start "$SERVICE"
 fi
 
 ```
