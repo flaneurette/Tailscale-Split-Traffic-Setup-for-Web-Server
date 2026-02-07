@@ -46,7 +46,7 @@ A lot of things can and will go wrong. So we designed the following `firewall in
 
 ```
 
-sudo apt install mailutils
+sudo apt install mailutils fail2ban
 
 # Disable nftables
 sudo systemctl stop nftables
